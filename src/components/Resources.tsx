@@ -27,29 +27,37 @@ import {
   Clock,
   DollarSign,
 } from "lucide-react";
+import { useCreateResource } from "@/hooks/useResourceApi";
+import { Alert } from "./Alert";
 
-interface Resource {
+export interface Resource {
   id: string;
-  type: string;
-  name: string;
+  resource_type: string;
+  title: string;
   image: string | undefined;
-  price: string;
+  price: number;
   duration: string;
   description: string;
+  teacher_id: number;
+  url: string;
 }
 
 const Resources = () => {
   const [resources, setResources] = useState<Array<Resource>>([]);
   const [newResource, setNewResource] = useState({
     id: "",
-    type: "video",
-    name: "",
+    resource_type: "video",
+    title: "",
     image: "",
-    price: "",
+    price: 0,
     duration: "",
     description: "",
+    teacher_id: 1,
+    url: "empty",
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  //const [showAlert, setShowAlert] = useState(false);
+  const { mutate, isSuccess } = useCreateResource();
 
   const handleFileUpload = (event: React.FormEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
@@ -69,31 +77,37 @@ const Resources = () => {
   };
 
   const isValidResource = () => {
-    if (newResource.type === "video" || newResource.type === "audio") {
+    if (
+      newResource.resource_type === "video" ||
+      newResource.resource_type === "audio"
+    ) {
       return newResource.duration.trim() !== "";
     }
     return true;
   };
 
   const addResource = () => {
-    if (newResource.name && isValidResource()) {
+    if (newResource.title && isValidResource()) {
       setResources([
         ...resources,
         { ...newResource, id: Date.now().toString() },
       ]);
       setNewResource({
         id: "",
-        type: "video",
-        name: "",
+        resource_type: "video",
+        title: "",
         image: "",
-        price: "",
+        price: 0,
         duration: "",
         description: "",
+        teacher_id: 1,
+        url: "empty",
       });
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     }
+    mutate(newResource);
   };
 
   const deleteResource = (id: string) => {
@@ -111,9 +125,9 @@ const Resources = () => {
             <div>
               <Label htmlFor="resourceType">Resource Type</Label>
               <Select
-                value={newResource.type}
+                value={newResource.resource_type}
                 onValueChange={(value) =>
-                  setNewResource({ ...newResource, type: value })
+                  setNewResource({ ...newResource, resource_type: value })
                 }
               >
                 <SelectTrigger>
@@ -131,9 +145,9 @@ const Resources = () => {
               <Input
                 id="resourceName"
                 placeholder="Resource Name"
-                value={newResource.name}
+                value={newResource.title}
                 onChange={(e) =>
-                  setNewResource({ ...newResource, name: e.target.value })
+                  setNewResource({ ...newResource, title: e.target.value })
                 }
               />
             </div>
@@ -168,7 +182,10 @@ const Resources = () => {
                 placeholder="Price"
                 value={newResource.price}
                 onChange={(e) =>
-                  setNewResource({ ...newResource, price: e.target.value })
+                  setNewResource({
+                    ...newResource,
+                    price: Number.parseInt(e.target.value),
+                  })
                 }
               />
             </div>
@@ -187,7 +204,8 @@ const Resources = () => {
                   setNewResource({ ...newResource, duration: e.target.value })
                 }
                 required={
-                  newResource.type === "video" || newResource.type === "audio"
+                  newResource.resource_type === "video" ||
+                  newResource.resource_type === "audio"
                 }
               />
             </div>
@@ -228,27 +246,30 @@ const Resources = () => {
             <div className="w-full aspect-video">
               <img
                 src={resource.image || "/placeholder.svg"}
-                alt={resource.name}
+                alt={resource.title}
                 className="w-full h-full object-cover"
               />
             </div>
             <CardContent className="pt-4">
-              <CardTitle className="text-lg mb-2">{resource.name}</CardTitle>
+              <CardTitle className="text-lg mb-2">{resource.title}</CardTitle>
               <Separator className="my-2" />
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  {resource.type === "video" && (
+                  {resource.resource_type === "video" && (
                     <Video className="h-4 w-4 text-blue-500" />
                   )}
-                  {resource.type === "audio" && (
+                  {resource.resource_type === "audio" && (
                     <Headphones className="h-4 w-4 text-green-500" />
                   )}
-                  {resource.type === "document" && (
+                  {resource.resource_type === "document" && (
                     <FileText className="h-4 w-4 text-yellow-500" />
                   )}
-                  <span className="text-sm font-medium">{resource.type}</span>
+                  <span className="text-sm font-medium">
+                    {resource.resource_type}
+                  </span>
                 </div>
-                {(resource.type === "video" || resource.type === "audio") && (
+                {(resource.resource_type === "video" ||
+                  resource.resource_type === "audio") && (
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
                     <span className="text-sm">{resource.duration} min</span>
@@ -266,6 +287,8 @@ const Resources = () => {
           </Card>
         ))}
       </div>
+
+      {isSuccess && <Alert message="Resource Created" />}
     </div>
   );
 };
