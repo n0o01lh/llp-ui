@@ -11,7 +11,7 @@ export interface Resource {
   title: string;
   image: string | undefined;
   price: number;
-  duration: string;
+  duration: number;
   description: string;
   teacher_id: number;
   url: string;
