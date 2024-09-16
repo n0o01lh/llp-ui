@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import apiClient from "@/lib/http/axiosClient";
-import { Resource } from "@/components/Resources";
+import { Resource } from "@/components/Resources/Resources";
 import { removeProperty } from "@/lib/utils";
 
 // Función para obtener datos de la API

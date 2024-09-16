@@ -12,8 +12,6 @@ export const Alert: React.FC<AlertProps> = (props) => {
   const [progress, setProgress] = useState(0);
   const duration = alertDuration || 15; // duración en segundos
 
-  console.log(visible);
-
   useEffect(() => {
     if (visible) {
       const timer = setTimeout(() => {
@@ -32,7 +30,7 @@ export const Alert: React.FC<AlertProps> = (props) => {
         clearInterval(interval);
       };
     }
-  }, [visible]);
+  }, [visible, duration]);
 
   useEffect(() => {
     setVisible(true);
@@ -62,11 +60,11 @@ export const Alert: React.FC<AlertProps> = (props) => {
         >
           <X className="h-5 w-5" />
         </button>
-        <div className="flex items-center">
-          <CheckCircle className="h-5 w-5 mr-2" />
-          <span className="font-bold">¡Atención!</span>
-        </div>
-        <p className="mt-2 mb-4">{message}</p>
+        <div className="flex items-center"></div>
+        <p className="mt-2 mb-4  flex items-center">
+          {" "}
+          <CheckCircle className="h-5 w-5 mr-2" /> {message}
+        </p>
         <div className="absolute bottom-0 left-0 w-full h-1 bg-slate-500">
           <div
             className="h-full bg-white transition-all duration-1000 ease-linear"
