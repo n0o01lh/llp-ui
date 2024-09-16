@@ -29,7 +29,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
     title: "",
     image: "",
     price: 0,
-    duration: "",
+    duration: 0,
     description: "",
     teacher_id: 1,
     url: "empty",
@@ -61,7 +61,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
       newResource.resource_type === "video" ||
       newResource.resource_type === "audio"
     ) {
-      return newResource.duration.trim() !== "";
+      return newResource.duration > 0;
     }
     return true;
   };
@@ -78,7 +78,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
         title: "",
         image: "",
         price: 0,
-        duration: "",
+        duration: 0,
         description: "",
         teacher_id: 1,
         url: "empty",
@@ -105,7 +105,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
     if (
       (newResource.resource_type === "video" ||
         newResource.resource_type === "audio") &&
-      newResource.duration === ""
+      newResource.duration === 0
     ) {
       fieldErrors.push(
         "Resource duration is required and must be greater than 0 when resource type is video or audio"
@@ -209,7 +209,10 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
                 placeholder="Duration"
                 value={newResource.duration}
                 onChange={(e) =>
-                  setNewResource({ ...newResource, duration: e.target.value })
+                  setNewResource({
+                    ...newResource,
+                    duration: parseInt(e.target.value),
+                  })
                 }
                 required={
                   newResource.resource_type === "video" ||
