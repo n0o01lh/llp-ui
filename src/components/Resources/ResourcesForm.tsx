@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -19,10 +19,11 @@ import { Resource } from "./Resources";
 interface ResourcesFormProps {
   resources: Array<Resource>;
   setResources: (resources: Array<Resource>) => void;
+  setData: (data: unknown) => void;
 }
 
 const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
-  const { resources, setResources } = props;
+  const { resources, setResources, setData } = props;
   const [newResource, setNewResource] = useState({
     id: "",
     resource_type: "video",
@@ -31,13 +32,13 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
     price: 0,
     duration: 0,
     description: "",
-    teacher_id: 1,
+    teacher_id: 2,
     url: "empty",
   });
   const [showErrors, setShowErrors] = useState(false);
   const [errors, setErrors] = useState<Array<string>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { mutate } = useCreateResource();
+  const { data, mutate, isSuccess } = useCreateResource();
 
   const handleFileUpload = (event: React.FormEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
@@ -72,6 +73,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
         ...resources,
         { ...newResource, id: Date.now().toString() },
       ]);
+
       setNewResource({
         id: "",
         resource_type: "video",
@@ -80,9 +82,10 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
         price: 0,
         duration: 0,
         description: "",
-        teacher_id: 1,
+        teacher_id: 2,
         url: "empty",
       });
+
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -121,6 +124,10 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
       mutate(newResource);
     }
   };
+
+  useEffect(() => {
+    setData(data);
+  }, [isSuccess]);
 
   return (
     <div>
