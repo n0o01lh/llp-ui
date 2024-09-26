@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Trash2,
   Video,
@@ -16,6 +16,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Resource } from "./Resources";
+import { useDeleteResource } from "@/hooks/useResourceApi";
+import DeleteConfirmationDialog from "../Shared/DeleteConfirmationDialog";
+import { Alert } from "../Alert";
 
 interface ResourcesGridProps {
   resources: Array<Resource>;
@@ -25,10 +28,25 @@ interface ResourcesGridProps {
 
 const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
   const { resources, setResources, isSuccess } = props;
+  const [idToDelete, setIdToDelete] = useState<string>();
+  const [titleToDelete, setTitleToDelete] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { mutate, isSuccess: deleteSuccess } = useDeleteResource();
 
-  const deleteResource = (id: string) => {
-    setResources(resources.filter((r) => r.id !== id));
+  const handleDelete = () => {
+    mutate(parseInt(idToDelete as string));
   };
+
+  const handleCancel = () => {
+    setIsDialogOpen(false);
+  };
+
+  useEffect(() => {
+    if (deleteSuccess) {
+      setResources(resources.filter((r) => r.id !== idToDelete));
+      setIsDialogOpen(false);
+    }
+  }, [deleteSuccess]);
 
   return (
     <div>
@@ -45,7 +63,11 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
                   variant="ghost"
                   size="icon"
                   className="absolute top-2 right-2 z-10 rounded-full bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => deleteResource(resource.id)}
+                  onClick={() => {
+                    setIdToDelete(resource.id);
+                    setTitleToDelete(resource.title);
+                    setIsDialogOpen(true);
+                  }}
                 >
                   <Trash2 className="h-4 w-4" />
                   <span className="sr-only">Delete resource</span>
@@ -100,6 +122,16 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
       ) : (
         <div>Loading....</div>
       )}
+
+      <DeleteConfirmationDialog
+        resourceName={titleToDelete}
+        onConfirm={handleDelete}
+        onCancel={handleCancel}
+        isOpen={isDialogOpen}
+        setIsOpen={setIsDialogOpen}
+      />
+
+      {deleteSuccess && <Alert message="Resource Deleted" duration={5} />}
     </div>
   );
 };
