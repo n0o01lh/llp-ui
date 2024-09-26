@@ -19,13 +19,18 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = (props) => {
   const { setActiveTab, setIsSidebarOpen, toggleSidebar } = props;
-  const [activeTab] = useState("resources");
+  const [activeTab, setTab] = useState("resources");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSidebarOpen] = useState(true);
   const navigate = useNavigate();
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
+  };
+
+  const handleTabs = (tab: string) => {
+    setTab(tab);
+    setActiveTab(tab);
   };
 
   return (
@@ -50,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               activeTab === "resources" ? "bg-blue-700 dark:bg-blue-800" : ""
             }`}
             onClick={() => {
-              setActiveTab("resources");
+              handleTabs("resources");
               navigate("/resources");
               if (window.innerWidth < 768) setIsSidebarOpen(false);
             }}
@@ -63,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               activeTab === "courses" ? "bg-blue-700 dark:bg-blue-800" : ""
             }`}
             onClick={() => {
-              setActiveTab("courses");
+              handleTabs("courses");
               navigate("/courses");
               if (window.innerWidth < 768) setIsSidebarOpen(false);
             }}
@@ -76,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
               activeTab === "data" ? "bg-blue-700 dark:bg-blue-800" : ""
             }`}
             onClick={() => {
-              setActiveTab("data");
+              handleTabs("data");
               navigate("/sales");
               if (window.innerWidth < 768) setIsSidebarOpen(false);
             }}
