@@ -28,7 +28,7 @@ const Resources = () => {
     queryClient.invalidateQueries({
       queryKey: ["RESOURCES_LIST_BY_TEACHER_QUERY"],
     });
-  }, [data]);
+  }, [data, resources]);
 
   return (
     <div>

@@ -16,6 +16,10 @@ const getResourceListByTeacherId = async (teacherId: string) => {
   });
 };
 
+const deleteResource = async (resourceId: number) => {
+  return await apiClient.delete(`/resource/delete/${resourceId}`);
+};
+
 // Hook personalizado para usar en componentes
 export const useCreateResource = () => {
   return useMutation({
@@ -39,4 +43,16 @@ export const useListResourceByTeacher = (teacherId: string) => {
   });
 
   return { data: data?.data, isSuccess: isSuccess, isError: isError };
+};
+
+export const useDeleteResource = () => {
+  return useMutation({
+    mutationFn: deleteResource,
+    onSuccess: (data) => {
+      console.debug("Deleting success:", data);
+    },
+    onError: (error) => {
+      console.error("Error deleting resource", error);
+    },
+  });
 };
