@@ -9,9 +9,26 @@ const createCourse = async (course: Course) => {
   return response.data;
 };
 
+const addResourcesToCourse = async (payload: unknown) => {
+  const response = await apiClient.post("/course/add-resources", payload); // Cambia la ruta al endpoint correcto
+  return response.data;
+};
+
 export const useCreateCourse = () => {
   return useMutation({
     mutationFn: createCourse,
+    onSuccess: (data) => {
+      console.log("Data created successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Error creating data:", error);
+    },
+  });
+};
+
+export const useAddResourcesToCourse = () => {
+  return useMutation({
+    mutationFn: addResourcesToCourse,
     onSuccess: (data) => {
       console.log("Data created successfully:", data);
     },
