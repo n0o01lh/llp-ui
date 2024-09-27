@@ -18,6 +18,7 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
   const { courses, setCourses } = props;
   const [showErrors, setShowErrors] = useState(false);
   const [errors, setErrors] = useState<Array<string>>([]);
+  const [addCourseButton, setAddCourseButton] = useState(false);
   const [newCourse, setNewCourse] = useState<Course>({
     id: "",
     title: "",
@@ -37,8 +38,9 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
         teacher_id: 2,
         resources: [],
       });
+      setAddCourseButton(false);
     }
-  }, [showErrors]);
+  }, [showErrors, addCourseButton]);
 
   const addCourse = () => {
     const fieldErrors = [];
@@ -58,6 +60,8 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
       setShowErrors(false);
       mutate(newCourse);
     }
+
+    setAddCourseButton(true);
   };
 
   return (
