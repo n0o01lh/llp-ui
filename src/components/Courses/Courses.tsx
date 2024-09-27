@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -15,10 +15,12 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import { Trash2, Video, Headphones, FileText } from "lucide-react";
+import { Trash2, Video, Headphones, FileText, Save } from "lucide-react";
 import { Resource } from "../Resources/Resources";
 import { useListResourceByTeacher } from "@/hooks/useResourceApi";
 import CoursesForm from "./CoursesForm";
+import { useAddResourcesToCourse } from "@/hooks/useCourseApi";
+import { Alert } from "../Alert";
 
 export interface Course {
   id: string;
@@ -31,6 +33,8 @@ export interface Course {
 const Courses = () => {
   const [courses, setCourses] = useState<Array<Course>>([]);
   const { data: resources } = useListResourceByTeacher("2");
+  const [saveChangesButton, setsaveChangesButton] = useState(true);
+  const { mutate, isSuccess } = useAddResourcesToCourse();
   const deleteCourse = (id: string) => {
     setCourses(courses.filter((c) => c.id !== id));
   };
@@ -49,10 +53,12 @@ const Courses = () => {
         )
       );
     }
+    setsaveChangesButton(false);
   };
 
   const removeResourceFromCourse = (courseId: string, resourceId: string) => {
     console.log({ courseId, resourceId });
+    setsaveChangesButton(false);
   };
 
   const calculateTotalPrice = (resourcesList: Array<Resource>) => {
@@ -64,6 +70,20 @@ const Courses = () => {
         return total + (resource ? parseFloat(resource.price) || 0 : 0);
       }, 0)
       .toFixed(2);
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      setsaveChangesButton(true);
+    }
+  }, [isSuccess]);
+
+  const saveChanges = (courseId: string) => {
+    const resourcesIds = courses
+      .find((c: Course) => c.id === courseId)
+      ?.resources.map((resource: Resource) => resource.id);
+
+    mutate({ resources: resourcesIds, course_id: 2 });
   };
 
   return (
@@ -163,14 +183,22 @@ const Courses = () => {
               </Select>
             </CardContent>
             <CardFooter>
-              <div className="flex items-center justify-end w-full">
+              <div className="flex items-center justify-end w-full gap-10">
                 <span className="font-semibold dark:text-white">
                   Total Price: ${calculateTotalPrice(course.resources)}
                 </span>
+
+                <Button
+                  disabled={saveChangesButton}
+                  onClick={() => saveChanges(course.id)}
+                >
+                  <Save className="mr-2 h-4 w-4" /> Save changes
+                </Button>
               </div>
             </CardFooter>
           </Card>
         ))}
+        {isSuccess && <Alert message="Changes saved" duration={5} />}
       </div>
     </div>
   );
