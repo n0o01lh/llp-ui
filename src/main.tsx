@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import "./index.css";
 import Resources from "./components/Resources/Resources.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Courses from "./components/Courses/Courses.tsx";
 
 const router = createBrowserRouter([
   {
@@ -11,7 +12,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "/resources", element: <Resources /> },
-      { path: "/courses", element: <h1>COURSES</h1> },
+      { path: "/courses", element: <Courses /> },
       { path: "/sales", element: <h1>SALES</h1> },
     ],
   },
