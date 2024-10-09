@@ -23,7 +23,7 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
     id: "",
     title: "",
     description: "",
-    teacher_id: 2,
+    teacher_id: 1,
     resources: [],
   });
   const { mutate } = useCreateCourse();
