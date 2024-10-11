@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
 interface DeleteConfirmationDialogProps {
-  resourceName: string;
+  message: string;
   onConfirm: () => void;
   onCancel: () => void;
   isOpen: boolean;
@@ -18,7 +18,7 @@ interface DeleteConfirmationDialogProps {
 }
 
 export default function DeleteConfirmationDialog({
-  resourceName,
+  message,
   onConfirm,
   onCancel,
   isOpen,
@@ -42,10 +42,7 @@ export default function DeleteConfirmationDialog({
           </Button>
         </DialogHeader>
         <div className="py-4">
-          <p className="text-sm text-gray-500">
-            This action will remove the resource <b>"{resourceName}"</b>{" "}
-            permanently. This action cannot be undone.
-          </p>
+          <p className="text-sm text-gray-500">{message}</p>
         </div>
         <DialogFooter className="sm:justify-start">
           <Button

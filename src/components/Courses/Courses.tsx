@@ -22,8 +22,10 @@ import CoursesForm from "./CoursesForm";
 import {
   useAddResourcesToCourse,
   useCourseListByTeacher,
+  useDeleteResourceFromCourse,
 } from "@/hooks/useCourseApi";
 import { Alert } from "../Alert";
+import DeleteConfirmationDialog from "../Shared/DeleteConfirmationDialog";
 
 export interface Course {
   id: string;
@@ -39,6 +41,11 @@ const Courses = () => {
   const [saveChangesButton, setsaveChangesButton] = useState(true);
   const { mutate, isSuccess } = useAddResourcesToCourse();
   const { data: courseList } = useCourseListByTeacher("1");
+  const { mutate: deleteMutate } = useDeleteResourceFromCourse();
+  const [courseIdFromDelete, setCourseIdFromDelete] = useState("");
+  const [resourceIdToDelete, setResourceIdToDelete] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [resourcesToDelete, setResourcesToDelete] = useState<Array<string>>([]);
   const deleteCourse = (id: string) => {
     setCourses(courses.filter((c) => c.id !== id));
   };
@@ -64,8 +71,39 @@ const Courses = () => {
     setsaveChangesButton(false);
   };
 
-  const removeResourceFromCourse = (courseId: string, resourceId: string) => {
-    console.log({ courseId, resourceId });
+  const handleCancel = () => {
+    setIsDialogOpen(false);
+  };
+
+  const removeResourceFromCourse = () => {
+    const course = courses.find((c: Course) => {
+      return c.id === courseIdFromDelete;
+    });
+
+    console.log({ course });
+    if (course != undefined) {
+      const resources = course.resources.filter(
+        (r: Resource) => r.id !== resourceIdToDelete
+      );
+
+      const rToDelete = resourcesToDelete.concat(
+        course.resources
+          .filter((r: Resource) => r.id === resourceIdToDelete)
+          .map((r: Resource) => r.id)
+      );
+
+      setResourcesToDelete(rToDelete);
+
+      setCourses(
+        courses.map((course) =>
+          course.id === courseIdFromDelete
+            ? { ...course, resources: resources }
+            : course
+        )
+      );
+    }
+    setIsDialogOpen(false);
+    //mutate(parseInt(idToDelete as string));
     setsaveChangesButton(false);
   };
 
@@ -86,12 +124,23 @@ const Courses = () => {
     }
   }, [isSuccess]);
 
-  const saveChanges = (courseId: string) => {
+  const saveChanges = async (courseId: string) => {
     const resourcesIds = courses
       .find((c: Course) => c.id === courseId)
       ?.resources.map((resource: Resource) => resource.id);
 
+    resourcesToDelete?.map(async (id: string) =>
+      deleteMutate({ courseId, resourceId: id })
+    );
+
     mutate({ resources: resourcesIds, course_id: courseId });
+  };
+
+  const getResourceNameFromId = (resourceId: string) => {
+    const resource = resources?.find(
+      (resource: Resource) => resource.id === resourceId
+    );
+    return resource?.title;
   };
 
   return (
@@ -160,9 +209,11 @@ const Courses = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() =>
-                              removeResourceFromCourse(course.id, resource.id)
-                            }
+                            onClick={() => {
+                              setIsDialogOpen(true);
+                              setCourseIdFromDelete(course.id);
+                              setResourceIdToDelete(resource.id);
+                            }}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -212,6 +263,18 @@ const Courses = () => {
         ) : (
           <></>
         )}
+
+        <DeleteConfirmationDialog
+          message={`This action will remove the resource "${getResourceNameFromId(
+            resourceIdToDelete
+          )}"
+            from this course. You must to press "Save changes" button to take effect.`}
+          onConfirm={removeResourceFromCourse}
+          onCancel={handleCancel}
+          isOpen={isDialogOpen}
+          setIsOpen={setIsDialogOpen}
+        />
+
         {isSuccess && <Alert message="Changes saved" duration={5} />}
       </div>
     </div>

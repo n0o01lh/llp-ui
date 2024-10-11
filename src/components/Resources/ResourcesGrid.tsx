@@ -124,7 +124,8 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
       )}
 
       <DeleteConfirmationDialog
-        resourceName={titleToDelete}
+        message={`This action will remove the resource "${titleToDelete}"
+            permanently. This action cannot be undone.`}
         onConfirm={handleDelete}
         onCancel={handleCancel}
         isOpen={isDialogOpen}
