@@ -20,6 +20,21 @@ const getCourseListByTeacherId = async (teacherId: string) => {
   });
 };
 
+const removeResourceFromCourse = async (payload: {
+  courseId: string;
+  resourceId: string;
+}) => {
+  console.log({ payload });
+  const response = await apiClient.delete("/course/remove-resource", {
+    data: {
+      resource_id: parseInt(payload.resourceId),
+      course_id: parseInt(payload.courseId),
+    },
+  });
+
+  return response.data;
+};
+
 export const useCreateCourse = () => {
   return useMutation({
     mutationFn: createCourse,
@@ -49,6 +64,18 @@ export const useAddResourcesToCourse = () => {
     },
     onError: (error) => {
       console.error("Error creating data:", error);
+    },
+  });
+};
+
+export const useDeleteResourceFromCourse = () => {
+  return useMutation({
+    mutationFn: removeResourceFromCourse,
+    onSuccess: (data) => {
+      console.debug("Deleting success:", data);
+    },
+    onError: (error) => {
+      console.error("Error deleting resource", error);
     },
   });
 };
