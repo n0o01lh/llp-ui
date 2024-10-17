@@ -18,7 +18,6 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
   const { courses, setCourses } = props;
   const [showErrors, setShowErrors] = useState(false);
   const [errors, setErrors] = useState<Array<string>>([]);
-  const [addCourseButton, setAddCourseButton] = useState(false);
   const [newCourse, setNewCourse] = useState<Course>({
     id: "",
     title: "",
@@ -26,11 +25,11 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
     teacher_id: 1,
     resources: [],
   });
-  const { mutate } = useCreateCourse();
+  const { mutate, data, isSuccess } = useCreateCourse();
 
   useEffect(() => {
     if (newCourse.title && !showErrors) {
-      setCourses([...courses, { ...newCourse, id: Date.now().toString() }]);
+      setCourses([...courses, { ...newCourse, id: data.id }]);
       setNewCourse({
         id: "",
         title: "",
@@ -38,9 +37,8 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
         teacher_id: 2,
         resources: [],
       });
-      setAddCourseButton(false);
     }
-  }, [showErrors, addCourseButton]);
+  }, [showErrors, isSuccess]);
 
   const addCourse = () => {
     const fieldErrors = [];
@@ -60,8 +58,6 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
       setShowErrors(false);
       mutate(newCourse);
     }
-
-    setAddCourseButton(true);
   };
 
   return (

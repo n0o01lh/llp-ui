@@ -35,6 +35,10 @@ const removeResourceFromCourse = async (payload: {
   return response.data;
 };
 
+const deleteCourse = async (courseId: number) => {
+  return await apiClient.delete(`/course/delete/${courseId}`);
+};
+
 export const useCreateCourse = () => {
   return useMutation({
     mutationFn: createCourse,
@@ -71,6 +75,18 @@ export const useAddResourcesToCourse = () => {
 export const useDeleteResourceFromCourse = () => {
   return useMutation({
     mutationFn: removeResourceFromCourse,
+    onSuccess: (data) => {
+      console.debug("Deleting success:", data);
+    },
+    onError: (error) => {
+      console.error("Error deleting resource", error);
+    },
+  });
+};
+
+export const useDeleteCourse = () => {
+  return useMutation({
+    mutationFn: deleteCourse,
     onSuccess: (data) => {
       console.debug("Deleting success:", data);
     },

@@ -22,6 +22,7 @@ import CoursesForm from "./CoursesForm";
 import {
   useAddResourcesToCourse,
   useCourseListByTeacher,
+  useDeleteCourse,
   useDeleteResourceFromCourse,
 } from "@/hooks/useCourseApi";
 import { Alert } from "../Alert";
@@ -42,17 +43,29 @@ const Courses = () => {
   const { mutate, isSuccess } = useAddResourcesToCourse();
   const { data: courseList } = useCourseListByTeacher("1");
   const { mutate: deleteMutate } = useDeleteResourceFromCourse();
+  const { mutate: deleteCourseMutate, isSuccess: isSuccessDeleteCourse } =
+    useDeleteCourse();
   const [courseIdFromDelete, setCourseIdFromDelete] = useState("");
   const [resourceIdToDelete, setResourceIdToDelete] = useState("");
+  const [courseIdToDelete, setCourseIdToDelete] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCourseDialogOpen, setIsCourseDialogOpen] = useState(false);
   const [resourcesToDelete, setResourcesToDelete] = useState<Array<string>>([]);
-  const deleteCourse = (id: string) => {
-    setCourses(courses.filter((c) => c.id !== id));
+
+  const deleteCourse = () => {
+    deleteCourseMutate(parseInt(courseIdToDelete));
+    setIsCourseDialogOpen(false);
   };
 
   useEffect(() => {
     setCourses(courseList);
   }, [courseList]);
+
+  useEffect(() => {
+    if (isSuccessDeleteCourse) {
+      setCourses(courses.filter((c) => c.id !== courseIdToDelete));
+    }
+  }, [isSuccessDeleteCourse]);
 
   const addResourceToCourse = (courseId: string, resourceId: number) => {
     const resource = resources.find((r: Resource) => {
@@ -73,6 +86,7 @@ const Courses = () => {
 
   const handleCancel = () => {
     setIsDialogOpen(false);
+    setIsCourseDialogOpen(false);
   };
 
   const removeResourceFromCourse = () => {
@@ -80,7 +94,6 @@ const Courses = () => {
       return c.id === courseIdFromDelete;
     });
 
-    console.log({ course });
     if (course != undefined) {
       const resources = course.resources.filter(
         (r: Resource) => r.id !== resourceIdToDelete
@@ -143,6 +156,11 @@ const Courses = () => {
     return resource?.title;
   };
 
+  const getCourseNameFromId = (courseId: string) => {
+    const course = courses?.find((course: Course) => course.id === courseId);
+    return course?.title;
+  };
+
   return (
     <div>
       <CoursesForm courses={courses} setCourses={setCourses} />
@@ -157,7 +175,10 @@ const Courses = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => deleteCourse(course.id)}
+                  onClick={() => {
+                    setIsCourseDialogOpen(true);
+                    setCourseIdToDelete(course.id);
+                  }}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -263,7 +284,6 @@ const Courses = () => {
         ) : (
           <></>
         )}
-
         <DeleteConfirmationDialog
           message={`This action will remove the resource "${getResourceNameFromId(
             resourceIdToDelete
@@ -273,6 +293,16 @@ const Courses = () => {
           onCancel={handleCancel}
           isOpen={isDialogOpen}
           setIsOpen={setIsDialogOpen}
+        />
+
+        <DeleteConfirmationDialog
+          message={`This action will remove the course "${getCourseNameFromId(
+            courseIdToDelete
+          )}".This action cannot be undone.`}
+          onConfirm={deleteCourse}
+          onCancel={handleCancel}
+          isOpen={isCourseDialogOpen}
+          setIsOpen={setIsCourseDialogOpen}
         />
 
         {isSuccess && <Alert message="Changes saved" duration={5} />}
