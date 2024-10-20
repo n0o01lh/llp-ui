@@ -21,7 +21,7 @@ export interface Resource {
 const Resources = () => {
   const [resources, setResources] = useState<Array<Resource>>([]);
   const [data, setData] = useState<unknown>();
-  const { data: resourceList, isSuccess } = useListResourceByTeacher("2");
+  const { data: resourceList, isSuccess } = useListResourceByTeacher("1");
   const queryClient = useQueryClient();
 
   useEffect(() => {
