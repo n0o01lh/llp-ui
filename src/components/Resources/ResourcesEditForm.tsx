@@ -45,7 +45,6 @@ const ResourcesEditForm = () => {
   };
 
   const editResource = () => {
-    console.log({ resource });
     const fieldErrors = [];
 
     if (resource?.title.trim() === "") {
@@ -213,9 +212,12 @@ const ResourcesEditForm = () => {
                 />
               </div>
             </div>
-            <Button onClick={editResource}>
-              <Save className="mr-2 h-4 w-4" /> Save Changes
-            </Button>
+            <div className="mx-auto w-fit">
+              <Button onClick={editResource}>
+                <Save className="mr-2 h-4 w-4" /> Save Changes
+              </Button>
+            </div>
+
             {showErrors && <ValidationFields missingFields={errors} />}
           </CardContent>
         </Card>

@@ -38,7 +38,7 @@ export const useCreateResource = () => {
   return useMutation({
     mutationFn: createResource,
     onSuccess: (data) => {
-      console.log("Data created successfully:", data);
+      console.debug("Data created successfully:", data);
     },
     onError: (error) => {
       console.error("Error creating data:", error);
@@ -50,7 +50,7 @@ export const useEditResource = () => {
   return useMutation({
     mutationFn: editResource,
     onSuccess: (data) => {
-      console.log("Data edited successfully:", data);
+      console.debug("Data edited successfully:", data);
     },
     onError: (error) => {
       console.error("Error editing data:", error);

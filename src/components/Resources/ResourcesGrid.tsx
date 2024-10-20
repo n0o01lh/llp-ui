@@ -67,7 +67,6 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
                   size="icon"
                   className="absolute top-2 right-12 z-10 rounded-full bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => {
-                    console.log("Edit resource with id " + resource.id);
                     navigate(`edit/${resource.id}`);
                   }}
                 >
