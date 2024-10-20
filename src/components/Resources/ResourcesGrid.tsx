@@ -6,6 +6,7 @@ import {
   FileText,
   Clock,
   DollarSign,
+  Pen,
 } from "lucide-react";
 import {
   Card,
@@ -19,6 +20,7 @@ import { Resource } from "./Resources";
 import { useDeleteResource } from "@/hooks/useResourceApi";
 import DeleteConfirmationDialog from "../Shared/DeleteConfirmationDialog";
 import { Alert } from "../Alert";
+import { useNavigate } from "react-router";
 
 interface ResourcesGridProps {
   resources: Array<Resource>;
@@ -32,6 +34,7 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
   const [titleToDelete, setTitleToDelete] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { mutate, isSuccess: deleteSuccess } = useDeleteResource();
+  const navigate = useNavigate();
 
   const handleDelete = () => {
     mutate(parseInt(idToDelete as string));
@@ -59,6 +62,17 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
                 key={resource.id}
                 className="relative overflow-hidden group"
               >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-12 z-10 rounded-full bg-black bg-opacity-50 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => {
+                    navigate(`edit/${resource.id}`);
+                  }}
+                >
+                  <Pen className="h-4 w-4" />
+                  <span className="sr-only">Delete resource</span>
+                </Button>
                 <Button
                   variant="ghost"
                   size="icon"

@@ -6,8 +6,22 @@ import { removeProperty } from "@/lib/utils";
 // Función para obtener datos de la API
 const createResource = async (resource: Resource) => {
   const sanitizedObject = removeProperty(resource, "id");
-  const response = await apiClient.post("/resource/create", sanitizedObject); // Cambia la ruta al endpoint correcto
+  const response = await apiClient.post("/resource/create", sanitizedObject);
   return response.data;
+};
+
+const editResource = async (resource: Resource) => {
+  const response = await apiClient.patch(
+    `/resource/update/${resource.id}`,
+    resource
+  );
+  return response.data;
+};
+
+const getResource = async (resourceId: string) => {
+  return await apiClient.get("/resource/find", {
+    params: { id: resourceId },
+  });
 };
 
 const getResourceListByTeacherId = async (teacherId: string) => {
@@ -20,20 +34,37 @@ const deleteResource = async (resourceId: number) => {
   return await apiClient.delete(`/resource/delete/${resourceId}`);
 };
 
-// Hook personalizado para usar en componentes
 export const useCreateResource = () => {
   return useMutation({
     mutationFn: createResource,
     onSuccess: (data) => {
-      // Aquí puedes manejar la lógica después de que la creación sea exitosa
-      // e.g., notificar al usuario o actualizar el estado global
-      console.log("Data created successfully:", data);
+      console.debug("Data created successfully:", data);
     },
     onError: (error) => {
-      // Aquí puedes manejar errores
       console.error("Error creating data:", error);
     },
   });
+};
+
+export const useEditResource = () => {
+  return useMutation({
+    mutationFn: editResource,
+    onSuccess: (data) => {
+      console.debug("Data edited successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Error editing data:", error);
+    },
+  });
+};
+
+export const useGetResource = (resourceId: string) => {
+  const { data, isSuccess, isError } = useQuery({
+    queryKey: ["RESOURCES_GET_RESOURCE_QUERY", resourceId],
+    queryFn: () => getResource(resourceId),
+  });
+
+  return { data: data?.data, isSuccess: isSuccess, isError: isError };
 };
 
 export const useListResourceByTeacher = (teacherId: string) => {

@@ -32,7 +32,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
     price: 0,
     duration: 0,
     description: "",
-    teacher_id: 2,
+    teacher_id: 1,
     url: "empty",
   });
   const [showErrors, setShowErrors] = useState(false);
@@ -82,7 +82,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
         price: 0,
         duration: 0,
         description: "",
-        teacher_id: 2,
+        teacher_id: 1,
         url: "empty",
       });
 
