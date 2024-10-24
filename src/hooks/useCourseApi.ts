@@ -5,12 +5,23 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 const createCourse = async (course: Course) => {
   const sanitizedObject = removeProperty(course, "id");
-  const response = await apiClient.post("/course/create", sanitizedObject); // Cambia la ruta al endpoint correcto
+  const response = await apiClient.post("/course/create", sanitizedObject);
   return response.data;
 };
 
+const editCourse = async (course: Course) => {
+  const response = await apiClient.patch(`/course/update/${course.id}`, course);
+  return response.data;
+};
+
+const getCourse = async (id: string) => {
+  return await apiClient.get("/course/find", {
+    params: { id: id },
+  });
+};
+
 const addResourcesToCourse = async (payload: unknown) => {
-  const response = await apiClient.post("/course/add-resources", payload); // Cambia la ruta al endpoint correcto
+  const response = await apiClient.post("/course/add-resources", payload);
   return response.data;
 };
 
@@ -49,6 +60,27 @@ export const useCreateCourse = () => {
       console.error("Error creating data:", error);
     },
   });
+};
+
+export const useEditCourse = () => {
+  return useMutation({
+    mutationFn: editCourse,
+    onSuccess: (data) => {
+      console.log("Data edited successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Error editing data:", error);
+    },
+  });
+};
+
+export const useGetcourse = (courseId: string) => {
+  const { data, isSuccess, isError } = useQuery({
+    queryKey: ["GET_COURSE_QUERY", courseId],
+    queryFn: () => getCourse(courseId),
+  });
+
+  return { data: data?.data, isSuccess: isSuccess, isError: isError };
 };
 
 export const useCourseListByTeacher = (teacherId: string) => {

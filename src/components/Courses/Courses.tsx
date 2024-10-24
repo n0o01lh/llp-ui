@@ -15,7 +15,14 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import { Trash2, Video, Headphones, FileText, Save } from "lucide-react";
+import {
+  Trash2,
+  Video,
+  Headphones,
+  FileText,
+  Save,
+  Pencil,
+} from "lucide-react";
 import { Resource } from "../Resources/Resources";
 import { useListResourceByTeacher } from "@/hooks/useResourceApi";
 import CoursesForm from "./CoursesForm";
@@ -27,6 +34,7 @@ import {
 } from "@/hooks/useCourseApi";
 import { Alert } from "../Alert";
 import DeleteConfirmationDialog from "../Shared/DeleteConfirmationDialog";
+import { useNavigate } from "react-router";
 
 export interface Course {
   id: string;
@@ -51,6 +59,7 @@ const Courses = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCourseDialogOpen, setIsCourseDialogOpen] = useState(false);
   const [resourcesToDelete, setResourcesToDelete] = useState<Array<string>>([]);
+  const navigate = useNavigate();
 
   const deleteCourse = () => {
     deleteCourseMutate(parseInt(courseIdToDelete));
@@ -172,16 +181,27 @@ const Courses = () => {
             <Card key={course.id}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle>{course.title}</CardTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setIsCourseDialogOpen(true);
-                    setCourseIdToDelete(course.id);
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div id="buttons">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      navigate(`edit/${course.id}`);
+                    }}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setIsCourseDialogOpen(true);
+                      setCourseIdToDelete(course.id);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 <CardDescription className="mb-4">
