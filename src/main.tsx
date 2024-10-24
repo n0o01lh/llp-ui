@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Courses from "./components/Courses/Courses.tsx";
 import ResourcesEditForm from "./components/Resources/ResourcesEditForm.tsx";
 import CoursesEditForm from "./components/Courses/CoursesEditForm.tsx";
+import Sales from "./components/Sales/Sales.tsx";
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
       { path: "/resources/edit/:id", element: <ResourcesEditForm /> },
       { path: "/courses", element: <Courses /> },
       { path: "/courses/edit/:id", element: <CoursesEditForm /> },
-      { path: "/sales", element: <h1>SALES</h1> },
+      { path: "/sales", element: <Sales /> },
     ],
   },
 ]);
