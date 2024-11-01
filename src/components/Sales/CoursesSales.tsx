@@ -1,57 +1,55 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { COLORS, LEGEND_STYLE } from "./constants";
 import {
   Bar,
   CartesianGrid,
   Legend,
-  BarChart as RechartsBarChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
+  BarChart as RechartsBarChart,
 } from "recharts";
 import CustomizedAxisTick from "../Shared/CustomAxisTick";
-import CustomChartTooltip from "../Shared/CustomChartTooltip";
-import BarChartLegend from "../Shared/BarChartLegend";
-import { COLORS, LEGEND_STYLE } from "./constants";
-import { ResourceSales } from "./Sales.interfaces";
+import { CourseSales } from "./Sales.interfaces";
 
-interface ResourcesSalesProps {
-  totalSalesFromResources: number;
-  salesDataToGraph: ResourceSales[];
+interface CoursesSalesProps {
+  totalSalesFromCourses: number;
+  salesDataToGraph: CourseSales[];
 }
 
-const ResourcesSales: React.FC<ResourcesSalesProps> = (props) => {
-  const { totalSalesFromResources, salesDataToGraph } = props;
+const CoursesSales: React.FC<CoursesSalesProps> = (props) => {
+  const { totalSalesFromCourses, salesDataToGraph } = props;
+
   return (
     <div>
       <Card>
         <CardHeader>
-          <CardTitle>Total sales from resources: </CardTitle>
+          <CardTitle>Total Sales from courses: </CardTitle>
         </CardHeader>
         <CardContent className="w-full">
           <div
             className="w-fit mx-auto"
-            style={{ fontSize: "3rem", color: `${COLORS.RESOURCES}` }}
+            style={{ fontSize: "3rem", color: `${COLORS.COURSES}` }}
           >
-            ${totalSalesFromResources}
+            ${totalSalesFromCourses}
           </div>
         </CardContent>
-
         <CardHeader>
-          <CardTitle>Best selling resources </CardTitle>
+          <CardTitle>Best selling courses</CardTitle>
         </CardHeader>
         <CardContent>
           <div style={{ width: "100%", height: 500 }}>
             <ResponsiveContainer>
               <RechartsBarChart
-                data={salesDataToGraph}
                 margin={{
                   top: 20,
                   right: 30,
                   left: 50,
                   bottom: 100,
                 }}
+                data={salesDataToGraph}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
@@ -60,18 +58,13 @@ const ResourcesSales: React.FC<ResourcesSalesProps> = (props) => {
                   tick={<CustomizedAxisTick />}
                 />
                 <YAxis />
-                <Tooltip
-                  content={<CustomChartTooltip color={COLORS.RESOURCES} />}
-                />
+                <Tooltip />
                 <Legend
-                  content={
-                    <BarChartLegend title="sales" color={COLORS.RESOURCES} />
-                  }
                   layout="vertical"
                   verticalAlign="middle"
                   wrapperStyle={LEGEND_STYLE}
                 />
-                <Bar dataKey="amount" fill={COLORS.RESOURCES} />
+                <Bar dataKey="amount" fill="#82ca9d" />
               </RechartsBarChart>
             </ResponsiveContainer>
           </div>
@@ -81,4 +74,4 @@ const ResourcesSales: React.FC<ResourcesSalesProps> = (props) => {
   );
 };
 
-export default ResourcesSales;
+export default CoursesSales;

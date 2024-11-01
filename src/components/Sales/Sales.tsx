@@ -1,65 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
-  BarChart as RechartsBarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
-import { useResourcesSalesByTeacher } from "@/hooks/useSalesApi";
-import CustomizedAxisTick from "../Shared/CustomAxisTick";
+  useCoursesSalesByTeacher,
+  useResourcesSalesByTeacher,
+} from "@/hooks/useSalesApi";
 import ResourcesSales from "./ResourcesSales";
-
-const courseSalesData = [
-  { name: "Course A", sales: 3000 },
-  { name: "Course B", sales: 2500 },
-  { name: "Course C", sales: 2000 },
-  { name: "Course D", sales: 3500 },
-  { name: "Course E", sales: 2800 },
-];
-
-const COLORS = {
-  RESOURCES: "#8884D8",
-  COURSES: "#82CA9D",
-};
-
-const legendStyle = {
-  top: "50%",
-  left: 0,
-  transform: "translate(0, -50%)",
-  lineHeight: "24px",
-};
-
-interface ResourceSales {
-  amount: number;
-  resourceId: number;
-  teacherId: number;
-  title: string;
-}
+import CoursesSales from "./CoursesSales";
+import { CourseSales, ResourceSales } from "./Sales.interfaces";
 
 const Sales = () => {
-  const { data } = useResourcesSalesByTeacher("2");
+  const { data: resourcesSalesData } = useResourcesSalesByTeacher("2");
+  const { data: coursesSalesData } = useCoursesSalesByTeacher("2");
   const [totalSalesFromResources, setTotalSalesFromResources] = useState(0);
+  const [totalSalesFromCourses, setTotalSalesFromCourses] = useState(0);
   const [salesDataToGraph, setSalesDataToGraph] = useState([]);
+  const [coursesSalesDataToGraph, setCoursesSalesDataToGraph] = useState([]);
 
   useEffect(() => {
-    if (data) {
-      const salesFromResources = data
+    if (resourcesSalesData) {
+      const salesFromResources = resourcesSalesData
         .map((value: ResourceSales) => value.amount)
         .reduce((accumulator: number, currentValue: number) => {
           return accumulator + currentValue;
         }, 0);
 
-      const salesData = data.slice(0, 5);
+      const salesData = resourcesSalesData.slice(0, 5);
 
       setTotalSalesFromResources(salesFromResources);
       setSalesDataToGraph(salesData);
     }
-  }, [data]);
+  }, [resourcesSalesData]);
+
+  useEffect(() => {
+    if (coursesSalesData) {
+      const salesFromCourses = coursesSalesData
+        .map((value: CourseSales) => value.amount)
+        .reduce((accumulator: number, currentValue: number) => {
+          return accumulator + currentValue;
+        }, 0);
+
+      const salesData = coursesSalesData.slice(0, 5);
+
+      setTotalSalesFromCourses(salesFromCourses);
+      setCoursesSalesDataToGraph(salesData);
+    }
+  }, [coursesSalesData]);
 
   return (
     <div>
@@ -69,52 +53,10 @@ const Sales = () => {
           salesDataToGraph={salesDataToGraph}
           totalSalesFromResources={totalSalesFromResources}
         />
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Sales from courses: </CardTitle>
-          </CardHeader>
-          <CardContent className="w-full">
-            <div
-              className="w-fit mx-auto"
-              style={{ fontSize: "3rem", color: `${COLORS.COURSES}` }}
-            >
-              $0
-            </div>
-          </CardContent>
-          <CardHeader>
-            <CardTitle>Course Sales</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div style={{ width: "100%", height: 500 }}>
-              <ResponsiveContainer>
-                <RechartsBarChart
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 50,
-                    bottom: 100,
-                  }}
-                  data={courseSalesData}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    interval={0}
-                    tick={<CustomizedAxisTick />}
-                  />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend
-                    layout="vertical"
-                    verticalAlign="middle"
-                    wrapperStyle={legendStyle}
-                  />
-                  <Bar dataKey="sales" fill="#82ca9d" />
-                </RechartsBarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <CoursesSales
+          salesDataToGraph={coursesSalesDataToGraph}
+          totalSalesFromCourses={totalSalesFromCourses}
+        />
       </div>
       {/*       <h2 className="text-2xl font-bold my-8 dark:text-white">Popularity</h2>
       <Card>
