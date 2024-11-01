@@ -1,6 +1,17 @@
 import React from "react";
 
-const CustomChartTooltip = ({ color, active, payload, label }) => {
+interface TooltipPayload {
+  value: number;
+}
+interface CustomChartTooltipProps {
+  color: string;
+  active?: boolean;
+  payload?: TooltipPayload[];
+  label?: string;
+}
+
+const CustomChartTooltip: React.FC<CustomChartTooltipProps> = (props) => {
+  const { color, active, payload, label } = props;
   if (active && payload && payload.length) {
     return (
       <div

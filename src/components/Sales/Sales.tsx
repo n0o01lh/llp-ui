@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
   BarChart as RechartsBarChart,
@@ -8,15 +8,11 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  PieChart,
-  Pie,
-  Cell,
   ResponsiveContainer,
 } from "recharts";
 import { useResourcesSalesByTeacher } from "@/hooks/useSalesApi";
-import BarCharLegend from "../Shared/BarChartLegend";
-import CustomChartTooltip from "../Shared/CustomChartTooltip";
 import CustomizedAxisTick from "../Shared/CustomAxisTick";
+import ResourcesSales from "./ResourcesSales";
 
 const courseSalesData = [
   { name: "Course A", sales: 3000 },
@@ -26,18 +22,10 @@ const courseSalesData = [
   { name: "Course E", sales: 2800 },
 ];
 
-const popularityData = [
-  { name: "Video 2", value: 30 },
-  { name: "Course D", value: 25 },
-  { name: "Audio 2", value: 20 },
-  { name: "Course A", value: 15 },
-  { name: "Document 1", value: 10 },
-];
-
 const COLORS = {
   RESOURCES: "#8884D8",
+  COURSES: "#82CA9D",
 };
-//const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", ];
 
 const legendStyle = {
   top: "50%",
@@ -46,56 +34,53 @@ const legendStyle = {
   lineHeight: "24px",
 };
 
+interface ResourceSales {
+  amount: number;
+  resourceId: number;
+  teacherId: number;
+  title: string;
+}
+
 const Sales = () => {
   const { data } = useResourcesSalesByTeacher("2");
+  const [totalSalesFromResources, setTotalSalesFromResources] = useState(0);
+  const [salesDataToGraph, setSalesDataToGraph] = useState([]);
 
-  console.log({ data });
+  useEffect(() => {
+    if (data) {
+      const salesFromResources = data
+        .map((value: ResourceSales) => value.amount)
+        .reduce((accumulator: number, currentValue: number) => {
+          return accumulator + currentValue;
+        }, 0);
+
+      const salesData = data.slice(0, 5);
+
+      setTotalSalesFromResources(salesFromResources);
+      setSalesDataToGraph(salesData);
+    }
+  }, [data]);
 
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4 dark:text-white">Sales Data</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <ResourcesSales
+          salesDataToGraph={salesDataToGraph}
+          totalSalesFromResources={totalSalesFromResources}
+        />
         <Card>
           <CardHeader>
-            <CardTitle>Resource Sales</CardTitle>
+            <CardTitle>Total Sales from courses: </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div style={{ width: "100%", height: 500 }}>
-              <ResponsiveContainer>
-                <RechartsBarChart
-                  data={data}
-                  margin={{
-                    top: 20,
-                    right: 30,
-                    left: 50,
-                    bottom: 100,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="title"
-                    interval={0}
-                    tick={<CustomizedAxisTick />}
-                  />
-                  <YAxis />
-                  <Tooltip
-                    content={<CustomChartTooltip color={COLORS.RESOURCES} />}
-                  />
-                  <Legend
-                    content={
-                      <BarCharLegend title="sales" color={COLORS.RESOURCES} />
-                    }
-                    layout="vertical"
-                    verticalAlign="middle"
-                    wrapperStyle={legendStyle}
-                  />
-                  <Bar dataKey="amount" fill={COLORS.RESOURCES} />
-                </RechartsBarChart>
-              </ResponsiveContainer>
+          <CardContent className="w-full">
+            <div
+              className="w-fit mx-auto"
+              style={{ fontSize: "3rem", color: `${COLORS.COURSES}` }}
+            >
+              $0
             </div>
           </CardContent>
-        </Card>
-        <Card>
           <CardHeader>
             <CardTitle>Course Sales</CardTitle>
           </CardHeader>
