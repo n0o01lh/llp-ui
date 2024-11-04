@@ -11,7 +11,7 @@ import {
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import { Save } from "lucide-react";
+import { Save, X } from "lucide-react";
 import { Resource } from "./Resources";
 import { useNavigate, useParams } from "react-router";
 import { useEditResource, useGetResource } from "@/hooks/useResourceApi";
@@ -26,6 +26,7 @@ const ResourcesEditForm = () => {
   const mutation = useEditResource();
   const navigate = useNavigate();
   const { data, isError, isSuccess } = useGetResource(params["id"] as string);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleFileUpload = (event: React.FormEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
@@ -39,6 +40,7 @@ const ResourcesEditForm = () => {
           ...(resource as Resource),
           image: reader.result?.toString() || "",
         });
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -79,6 +81,7 @@ const ResourcesEditForm = () => {
   useEffect(() => {
     if (isSuccess) {
       setResource(data);
+      setImagePreview(data.image);
     }
   }, [isSuccess, data]);
 
@@ -134,26 +137,42 @@ const ResourcesEditForm = () => {
                   }
                 />
               </div>
-              <div>
-                <Label htmlFor="resourceImage">Resource Image URL</Label>
-                <Input
-                  id="resourceImage"
-                  placeholder="Image URL"
-                  value={resource?.image}
-                  onChange={(e) =>
-                    setResource({ ...resource!, image: e.target.value })
-                  }
-                />
-              </div>
-              <div>
+              <div className="col-span-2">
                 <Label htmlFor="resourceImageUpload">Upload Image</Label>
-                <Input
-                  id="resourceImageUpload"
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleFileUpload}
-                />
+                <div className="mt-2 flex items-center gap-4">
+                  <Input
+                    id="resourceImageUpload"
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    className="flex-1"
+                  />
+                  {imagePreview && (
+                    <div className="relative w-32 h-32">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover rounded"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-0 right-0 bg-black bg-opacity-50 text-white rounded-full p-1"
+                        onClick={() => {
+                          setImagePreview(null);
+                          setResource({ ...resource!, image: "" });
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Remove image</span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 <Label htmlFor="resourcePrice">Resource Price</Label>
