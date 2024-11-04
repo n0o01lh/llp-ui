@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ValidationFields from "../ValidationFields";
 import { useCreateResource } from "@/hooks/useResourceApi";
@@ -39,6 +39,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
   const [errors, setErrors] = useState<Array<string>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data, mutate, isSuccess } = useCreateResource();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleFileUpload = (event: React.FormEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
@@ -52,6 +53,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
           ...newResource,
           image: reader.result?.toString() || "",
         });
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -122,6 +124,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
     } else {
       setShowErrors(false);
       mutate(newResource);
+      setImagePreview("");
     }
   };
 
@@ -166,26 +169,42 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
                 }
               />
             </div>
-            <div>
-              <Label htmlFor="resourceImage">Resource Image URL</Label>
-              <Input
-                id="resourceImage"
-                placeholder="Image URL"
-                value={newResource.image}
-                onChange={(e) =>
-                  setNewResource({ ...newResource, image: e.target.value })
-                }
-              />
-            </div>
-            <div>
+            <div className="col-span-2">
               <Label htmlFor="resourceImageUpload">Upload Image</Label>
-              <Input
-                id="resourceImageUpload"
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-              />
+              <div className="mt-2 flex items-center gap-4">
+                <Input
+                  id="resourceImageUpload"
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  className="flex-1"
+                />
+                {imagePreview && (
+                  <div className="relative w-32 h-32">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-0 right-0 bg-black bg-opacity-50 text-white rounded-full p-1"
+                      onClick={() => {
+                        setImagePreview(null);
+                        setNewResource({ ...newResource, image: "" });
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = "";
+                        }
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                      <span className="sr-only">Remove image</span>
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <Label htmlFor="resourcePrice">Resource Price</Label>
