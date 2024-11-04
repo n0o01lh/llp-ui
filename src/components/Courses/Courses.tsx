@@ -220,7 +220,7 @@ const Courses = () => {
                         key={resource.id}
                         className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-2 rounded"
                       >
-                        <div className="flex items-center space-x-2">
+                        <div className="flex flex-1 items-center space-x-2">
                           {resource.resource_type === "video" && (
                             <Video className="h-4 w-4 text-blue-500" />
                           )}
@@ -234,10 +234,7 @@ const Courses = () => {
                             {resource.title}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <span className="text-sm dark:text-gray-300">
-                            {resource.resource_type}
-                          </span>
+                        <div className="flex items-center gap-4">
                           <span className="text-sm dark:text-gray-300">
                             ${resource.price}
                           </span>
@@ -273,7 +270,11 @@ const Courses = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {resources
-                      .filter((r: Resource) => !course.resources.includes(r))
+                      .filter((r: Resource) => {
+                        return !course.resources.some(
+                          (resource: Resource) => resource.id === r.id
+                        );
+                      })
                       .map((resource: Resource) => (
                         <SelectItem
                           key={resource.id}
