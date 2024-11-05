@@ -5,6 +5,10 @@ const getResourceSalesByTeacher = async (teacherId: string) => {
   return await apiClient.get(`/resource/sales-by-teacher/${teacherId}`);
 };
 
+const getResourceSalesCountByTeacher = async (teacherId: string) => {
+  return await apiClient.get(`/resource/sales-count-by-teacher/${teacherId}`);
+};
+
 const getCourseSalesByTeacher = async (teacherId: string) => {
   return await apiClient.get(`/course/sales/${teacherId}`);
 };
@@ -13,6 +17,15 @@ export const useResourcesSalesByTeacher = (teacherId: string) => {
   const { data, isSuccess, isError } = useQuery({
     queryKey: ["GET_RESOURCES_SALES_BY_TEACHER_QUERY", teacherId],
     queryFn: () => getResourceSalesByTeacher(teacherId),
+  });
+
+  return { data: data?.data, isSuccess: isSuccess, isError: isError };
+};
+
+export const useResourceSalesCountByTeacher = (teacherId: string) => {
+  const { data, isSuccess, isError } = useQuery({
+    queryKey: ["GET_RESOURCES_SALES_COUNT_BY_TEACHER_QUERY", teacherId],
+    queryFn: () => getResourceSalesCountByTeacher(teacherId),
   });
 
   return { data: data?.data, isSuccess: isSuccess, isError: isError };

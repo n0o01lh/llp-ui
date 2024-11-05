@@ -35,7 +35,6 @@ const removeResourceFromCourse = async (payload: {
   courseId: string;
   resourceId: string;
 }) => {
-  console.log({ payload });
   const response = await apiClient.delete("/course/remove-resource", {
     data: {
       resource_id: parseInt(payload.resourceId),

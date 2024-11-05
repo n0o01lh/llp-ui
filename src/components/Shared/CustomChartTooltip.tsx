@@ -2,16 +2,24 @@ import React from "react";
 
 interface TooltipPayload {
   value: number;
+  title: string;
+  fill: string;
+  payload: {
+    title: string;
+    fill: string;
+  };
 }
 interface CustomChartTooltipProps {
   color: string;
   active?: boolean;
   payload?: TooltipPayload[];
   label?: string;
+  valueLabel: string;
 }
 
 const CustomChartTooltip: React.FC<CustomChartTooltipProps> = (props) => {
-  const { color, active, payload, label } = props;
+  const { active, payload, valueLabel } = props;
+
   if (active && payload && payload.length) {
     return (
       <div
@@ -22,11 +30,11 @@ const CustomChartTooltip: React.FC<CustomChartTooltipProps> = (props) => {
         }}
         className="custom-tooltip"
       >
-        <p className="label">{`${label}`}</p>
+        <p className="label">{`${payload[0].payload.title}`}</p>
         <p
-          style={{ color: `${color}`, fontWeight: "bold" }}
+          style={{ color: `${payload[0].payload.fill}`, fontWeight: "bold" }}
           className="label"
-        >{`sales $${payload[0].value}`}</p>
+        >{`${valueLabel}${payload[0].value}`}</p>
       </div>
     );
   }

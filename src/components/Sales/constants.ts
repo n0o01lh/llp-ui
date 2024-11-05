@@ -9,3 +9,10 @@ export const LEGEND_STYLE = {
   transform: "translate(0, -50%)",
   lineHeight: "24px",
 };
+
+export const PIE_CHART_LEGEND_STYLE = {
+  top: "50%",
+  left: -200,
+  transform: "translate(0, -130%)",
+  lineHeight: "24px",
+};
