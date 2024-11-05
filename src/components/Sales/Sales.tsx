@@ -1,19 +1,31 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useCoursesSalesByTeacher,
+  useResourceSalesCountByTeacher,
   useResourcesSalesByTeacher,
 } from "@/hooks/useSalesApi";
 import ResourcesSales from "./ResourcesSales";
 import CoursesSales from "./CoursesSales";
 import { CourseSales, ResourceSales } from "./Sales.interfaces";
+import ResourcesSalesCountPieChart from "./ResourcesSalesCountPieChart";
 
 const Sales = () => {
   const { data: resourcesSalesData } = useResourcesSalesByTeacher("2");
   const { data: coursesSalesData } = useCoursesSalesByTeacher("2");
+  const { data: resourcesSalesCountData } = useResourceSalesCountByTeacher("2");
   const [totalSalesFromResources, setTotalSalesFromResources] = useState(0);
   const [totalSalesFromCourses, setTotalSalesFromCourses] = useState(0);
   const [salesDataToGraph, setSalesDataToGraph] = useState([]);
+  const [resourceSalesCountToGraph, setResourceSalesCountToGraph] = useState(
+    []
+  );
   const [coursesSalesDataToGraph, setCoursesSalesDataToGraph] = useState([]);
+
+  useEffect(() => {
+    if (resourcesSalesCountData) {
+      setResourceSalesCountToGraph(resourcesSalesCountData);
+    }
+  }, [resourcesSalesCountData]);
 
   useEffect(() => {
     if (resourcesSalesData) {
@@ -58,34 +70,7 @@ const Sales = () => {
           totalSalesFromCourses={totalSalesFromCourses}
         />
       </div>
-      {/*       <h2 className="text-2xl font-bold my-8 dark:text-white">Popularity</h2>
-      <Card>
-        <CardHeader>
-          <CardTitle>Most Popular Resources and Courses</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PieChart width={500} height={300}>
-            <Pie
-              data={popularityData}
-              cx={250}
-              cy={150}
-              labelLine={false}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {popularityData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </CardContent>
-      </Card> */}
+      <ResourcesSalesCountPieChart dataToGraph={resourceSalesCountToGraph} />
     </div>
   );
 };

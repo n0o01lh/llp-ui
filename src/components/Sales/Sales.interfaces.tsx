@@ -11,3 +11,10 @@ export interface CourseSales {
   teacherId: number;
   title: string;
 }
+
+export interface ResourceSalesCount {
+  salesCount: number;
+  teacherId: number;
+  resourceId: number;
+  title: string;
+}

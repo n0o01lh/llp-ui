@@ -13,6 +13,8 @@ import {
 } from "recharts";
 import CustomizedAxisTick from "../Shared/CustomAxisTick";
 import { CourseSales } from "./Sales.interfaces";
+import CustomChartTooltip from "../Shared/CustomChartTooltip";
+import BarChartLegend from "../Shared/BarChartLegend";
 
 interface CoursesSalesProps {
   totalSalesFromCourses: number;
@@ -58,13 +60,23 @@ const CoursesSales: React.FC<CoursesSalesProps> = (props) => {
                   tick={<CustomizedAxisTick />}
                 />
                 <YAxis />
-                <Tooltip />
+                <Tooltip
+                  content={
+                    <CustomChartTooltip
+                      valueLabel="Sales: $"
+                      color={COLORS.COURSES}
+                    />
+                  }
+                />
                 <Legend
+                  content={
+                    <BarChartLegend title="sales" color={COLORS.COURSES} />
+                  }
                   layout="vertical"
                   verticalAlign="middle"
                   wrapperStyle={LEGEND_STYLE}
                 />
-                <Bar dataKey="amount" fill="#82ca9d" />
+                <Bar dataKey="amount" fill={COLORS.COURSES} />
               </RechartsBarChart>
             </ResponsiveContainer>
           </div>

@@ -61,7 +61,12 @@ const ResourcesSales: React.FC<ResourcesSalesProps> = (props) => {
                 />
                 <YAxis />
                 <Tooltip
-                  content={<CustomChartTooltip color={COLORS.RESOURCES} />}
+                  content={
+                    <CustomChartTooltip
+                      valueLabel="Sales: $"
+                      color={COLORS.RESOURCES}
+                    />
+                  }
                 />
                 <Legend
                   content={
