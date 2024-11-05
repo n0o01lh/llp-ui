@@ -6,7 +6,9 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 
 function App() {
-  const [activeTab, setActiveTab] = useState("resources");
+  const [activeTab, setActiveTab] = useState(
+    localStorage.getItem("activeTab") || ""
+  );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -20,6 +22,8 @@ function App() {
           setActiveTab={setActiveTab}
           setIsSidebarOpen={setIsSidebarOpen}
           toggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+          activeTab={activeTab}
         />
       </div>
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -33,11 +37,7 @@ function App() {
             <Menu className="h-6 w-6" />
           </Button>
           <h1 className="text-xl font-semibold dark:text-white">
-            {activeTab === "resources"
-              ? "Resources"
-              : activeTab === "courses"
-              ? "Courses"
-              : "Data"}
+            {activeTab.toLocaleUpperCase()}
           </h1>
         </header>
         <div className="flex-1 p-8 overflow-auto bg-gray-100 dark:bg-gray-900">
