@@ -15,13 +15,19 @@ interface SidebarProps {
   setActiveTab: (x: string) => void;
   setIsSidebarOpen: (x: boolean) => void;
   toggleSidebar: () => void;
+  isSidebarOpen: boolean;
+  activeTab: string;
 }
 
 const Sidebar: React.FC<SidebarProps> = (props) => {
-  const { setActiveTab, setIsSidebarOpen, toggleSidebar } = props;
-  const [activeTab, setTab] = useState("resources");
+  const {
+    setActiveTab,
+    setIsSidebarOpen,
+    toggleSidebar,
+    isSidebarOpen,
+    activeTab,
+  } = props;
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isSidebarOpen] = useState(true);
   const navigate = useNavigate();
 
   const toggleDarkMode = () => {
@@ -29,8 +35,8 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
   };
 
   const handleTabs = (tab: string) => {
-    setTab(tab);
     setActiveTab(tab);
+    localStorage.setItem("activeTab", tab);
   };
 
   return (
@@ -39,7 +45,6 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
         isDarkMode ? "dark" : ""
       }`}
     >
-      {/* Sidebar */}
       <div
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-blue-800 dark:bg-blue-900 text-white p-6 transform transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
