@@ -26,6 +26,7 @@ const Auth = () => {
   } = useRegister();
   const {
     mutate: loginMutate,
+    data: loginData,
     isSuccess: loginSuccess,
     isError: loginError,
   } = useLogin();
@@ -46,7 +47,6 @@ const Auth = () => {
   };
 
   const handleSocialLogin = (provider: string) => {
-    // Here you would typically handle the social login logic
     console.log(`Login with ${provider}`);
   };
 
@@ -55,6 +55,7 @@ const Auth = () => {
   }
 
   if (loginSuccess) {
+    localStorage.setItem("token", loginData.token);
     navigate(`/resources`);
   }
 
@@ -82,42 +83,6 @@ const Auth = () => {
                 setPassword={setPassword}
                 isError={loginError}
               />
-              {/*               <form onSubmit={(e) => handleSubmit(e, "login")}>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                      <Input
-                        id="email"
-                        placeholder="m@example.com"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                      <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <Button type="submit" className="w-full">
-                    Login
-                  </Button>
-                </div>
-              </form> */}
             </TabsContent>
             <TabsContent value="register">
               <RegisterForm
@@ -127,42 +92,6 @@ const Auth = () => {
                 setPassword={setPassword}
                 isError={registerError}
               />
-              {/*               <form onSubmit={(e) => handleSubmit(e, "register")}>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                      <Input
-                        id="register-email"
-                        placeholder="m@example.com"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                      <Input
-                        id="register-password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="pl-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <Button type="submit" className="w-full">
-                    Register
-                  </Button>
-                </div>
-              </form> */}
             </TabsContent>
           </Tabs>
         </CardContent>
