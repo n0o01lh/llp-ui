@@ -4,12 +4,14 @@ import { X } from "lucide-react";
 
 interface ValidationFieldsProps {
   missingFields: string[];
+  title?: string;
   onClose?: () => void;
 }
 
 export default function ValidationFields({
   missingFields = [],
   onClose,
+  title = "Missing required fields",
 }: ValidationFieldsProps) {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -30,9 +32,7 @@ export default function ValidationFields({
         >
           <div className="p-4">
             <div className="flex justify-between items-start">
-              <h3 className="text-sm font-medium text-red-800">
-                Missing required fields
-              </h3>
+              <h3 className="text-sm font-medium text-red-800">{title}</h3>
               <button
                 onClick={handleClose}
                 className="ml-4 text-red-400 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
