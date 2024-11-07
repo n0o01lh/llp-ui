@@ -8,6 +8,8 @@ import Courses from "./components/Courses/Courses.tsx";
 import ResourcesEditForm from "./components/Resources/ResourcesEditForm.tsx";
 import CoursesEditForm from "./components/Courses/CoursesEditForm.tsx";
 import Sales from "./components/Sales/Sales.tsx";
+import Auth from "./components/User/Auth.tsx";
+import RegisterSuccess from "./components/User/RegisterSuccess.tsx";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +25,14 @@ const router = createBrowserRouter([
       { path: "/courses/edit/:id", element: <CoursesEditForm /> },
       { path: "/sales", element: <Sales /> },
     ],
+  },
+  {
+    path: "/auth",
+    element: <Auth />,
+  },
+  {
+    path: "/auth/register/:email",
+    element: <RegisterSuccess />,
   },
 ]);
 
