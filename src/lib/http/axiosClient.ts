@@ -11,8 +11,9 @@ const apiClient = axios.create({
 // interceptores para manejar solicitudes o respuestas globalmente
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    const userAuth = JSON.parse(localStorage.getItem("userAuth") as string);
+    if (userAuth) {
+      const token = userAuth.token;
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;

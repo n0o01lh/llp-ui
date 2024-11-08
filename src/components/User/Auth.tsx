@@ -14,6 +14,7 @@ import RegisterForm from "./RegisterForm";
 import LoginForm from "./LoginForm";
 import { useLogin, useRegister } from "@/hooks/useAuthApi";
 import { useNavigate } from "react-router";
+import { UserStoreState, useUserStore } from "@/store/userStore";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -31,6 +32,9 @@ const Auth = () => {
     isError: loginError,
   } = useLogin();
   const navigate = useNavigate();
+  const setUserAuth = useUserStore(
+    (state: UserStoreState) => state.setUserAuth
+  );
 
   const handleSubmit = (
     event: React.FormEvent,
@@ -55,7 +59,7 @@ const Auth = () => {
   }
 
   if (loginSuccess) {
-    localStorage.setItem("token", loginData.token);
+    setUserAuth(loginData);
     navigate(`/resources`);
   }
 
