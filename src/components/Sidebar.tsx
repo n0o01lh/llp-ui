@@ -57,6 +57,19 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
         <nav className="space-y-2">
           <button
             className={`w-full text-left py-2 px-4 rounded flex items-center ${
+              activeTab === "data" ? "bg-blue-700 dark:bg-blue-800" : ""
+            }`}
+            onClick={() => {
+              handleTabs("data");
+              navigate("/dashboard/sales");
+              if (window.innerWidth < 768) setIsSidebarOpen(false);
+            }}
+          >
+            <BarChart className="h-5 w-5 mr-2" />
+            Data
+          </button>
+          <button
+            className={`w-full text-left py-2 px-4 rounded flex items-center ${
               activeTab === "resources" ? "bg-blue-700 dark:bg-blue-800" : ""
             }`}
             onClick={() => {
@@ -80,19 +93,6 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
           >
             <GraduationCap className="h-5 w-5 mr-2" />
             Courses
-          </button>
-          <button
-            className={`w-full text-left py-2 px-4 rounded flex items-center ${
-              activeTab === "data" ? "bg-blue-700 dark:bg-blue-800" : ""
-            }`}
-            onClick={() => {
-              handleTabs("data");
-              navigate("/dashboard/sales");
-              if (window.innerWidth < 768) setIsSidebarOpen(false);
-            }}
-          >
-            <BarChart className="h-5 w-5 mr-2" />
-            Data
           </button>
         </nav>
         <Button

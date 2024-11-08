@@ -60,7 +60,7 @@ const Auth = () => {
 
   if (loginSuccess) {
     setUserAuth(loginData);
-    navigate(`/dashboard/resources`);
+    navigate(`/home`);
   }
 
   return (
