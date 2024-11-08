@@ -13,6 +13,9 @@ import RegisterSuccess from "./components/User/RegisterSuccess.tsx";
 import ProtectedRoutes from "./ProtectedRoutes.tsx";
 import NotFound from "./components/NotFound.tsx";
 import RootRedirection from "./RootRedirection.tsx";
+import Forbidden from "./components/Forbidden.tsx";
+import { ROLES } from "./components/Shared/Constants.tsx";
+import TopMenu from "./components/Shared/TopMenu.tsx";
 
 const router = createBrowserRouter([
   {
@@ -30,16 +33,20 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/home",
+    element: <TopMenu />,
+  },
+  {
     path: "/dashboard",
-    element: <ProtectedRoutes />,
+    element: <ProtectedRoutes protectedRole={ROLES.TEACHER} />,
     children: [
       {
         path: "/dashboard",
         element: <App />,
         children: [
+          { path: "sales", index: true, element: <Sales /> },
           {
             path: "resources",
-            index: true,
             element: <Resources />,
           },
           {
@@ -48,7 +55,6 @@ const router = createBrowserRouter([
           },
           { path: "courses", element: <Courses /> },
           { path: "courses/edit/:id", element: <CoursesEditForm /> },
-          { path: "sales", element: <Sales /> },
         ],
       },
     ],
@@ -56,6 +62,10 @@ const router = createBrowserRouter([
   {
     path: "/404",
     element: <NotFound />,
+  },
+  {
+    path: "/forbidden",
+    element: <Forbidden />,
   },
   {
     path: "*",

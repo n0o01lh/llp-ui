@@ -7,7 +7,7 @@ const RootRedirection = () => {
     return <Outlet />;
   }
 
-  return <Navigate to={"/dashboard/resources"} replace />;
+  return <Navigate to={"/home"} replace />;
 };
 
 export default RootRedirection;
