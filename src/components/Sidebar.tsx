@@ -61,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             }`}
             onClick={() => {
               handleTabs("resources");
-              navigate("/resources");
+              navigate("/dashboard/resources");
               if (window.innerWidth < 768) setIsSidebarOpen(false);
             }}
           >
@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             }`}
             onClick={() => {
               handleTabs("courses");
-              navigate("/courses");
+              navigate("/dashboard/courses");
               if (window.innerWidth < 768) setIsSidebarOpen(false);
             }}
           >
@@ -87,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = (props) => {
             }`}
             onClick={() => {
               handleTabs("data");
-              navigate("/sales");
+              navigate("/dashboard/sales");
               if (window.innerWidth < 768) setIsSidebarOpen(false);
             }}
           >
