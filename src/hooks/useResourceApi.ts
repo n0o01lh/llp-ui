@@ -3,7 +3,6 @@ import apiClient from "@/lib/http/axiosClient";
 import { Resource } from "@/components/Resources/Resources";
 import { removeProperty } from "@/lib/utils";
 
-// Función para obtener datos de la API
 const createResource = async (resource: Resource) => {
   const sanitizedObject = removeProperty(resource, "id");
   const response = await apiClient.post("/resource/create", sanitizedObject);

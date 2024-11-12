@@ -1,40 +1,40 @@
 import apiClient from "@/lib/http/axiosClient";
 import { useQuery } from "@tanstack/react-query";
 
-const getResourceSalesByTeacher = async (teacherId: string) => {
-  return await apiClient.get(`/resource/sales-by-teacher/${teacherId}`);
+const getResourceSalesByTeacher = async () => {
+  return await apiClient.get(`/resource/sales-by-teacher`);
 };
 
-const getResourceSalesCountByTeacher = async (teacherId: string) => {
-  return await apiClient.get(`/resource/sales-count-by-teacher/${teacherId}`);
+const getResourceSalesCountByTeacher = async () => {
+  return await apiClient.get(`/resource/sales-count-by-teacher`);
 };
 
-const getCourseSalesByTeacher = async (teacherId: string) => {
-  return await apiClient.get(`/course/sales/${teacherId}`);
+const getCourseSalesByTeacher = async () => {
+  return await apiClient.get(`/course/sales`);
 };
 
-export const useResourcesSalesByTeacher = (teacherId: string) => {
+export const useResourcesSalesByTeacher = () => {
+  const { data, isSuccess, isError, refetch } = useQuery({
+    queryKey: ["GET_RESOURCES_SALES_BY_TEACHER_QUERY"],
+    queryFn: () => getResourceSalesByTeacher(),
+  });
+
+  return { data: data?.data, isSuccess: isSuccess, isError: isError, refetch };
+};
+
+export const useResourceSalesCountByTeacher = () => {
   const { data, isSuccess, isError } = useQuery({
-    queryKey: ["GET_RESOURCES_SALES_BY_TEACHER_QUERY", teacherId],
-    queryFn: () => getResourceSalesByTeacher(teacherId),
+    queryKey: ["GET_RESOURCES_SALES_COUNT_BY_TEACHER_QUERY"],
+    queryFn: () => getResourceSalesCountByTeacher(),
   });
 
   return { data: data?.data, isSuccess: isSuccess, isError: isError };
 };
 
-export const useResourceSalesCountByTeacher = (teacherId: string) => {
+export const useCoursesSalesByTeacher = () => {
   const { data, isSuccess, isError } = useQuery({
-    queryKey: ["GET_RESOURCES_SALES_COUNT_BY_TEACHER_QUERY", teacherId],
-    queryFn: () => getResourceSalesCountByTeacher(teacherId),
-  });
-
-  return { data: data?.data, isSuccess: isSuccess, isError: isError };
-};
-
-export const useCoursesSalesByTeacher = (teacherId: string) => {
-  const { data, isSuccess, isError } = useQuery({
-    queryKey: ["GET_COURSES_SALES_BY_TEACHER_QUERY", teacherId],
-    queryFn: () => getCourseSalesByTeacher(teacherId),
+    queryKey: ["GET_COURSES_SALES_BY_TEACHER_QUERY"],
+    queryFn: () => getCourseSalesByTeacher(),
   });
 
   return { data: data?.data, isSuccess: isSuccess, isError: isError };
