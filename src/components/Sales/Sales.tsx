@@ -10,9 +10,9 @@ import { CourseSales, ResourceSales } from "./Sales.interfaces";
 import ResourcesSalesCountPieChart from "./ResourcesSalesCountPieChart";
 
 const Sales = () => {
-  const { data: resourcesSalesData } = useResourcesSalesByTeacher("2");
-  const { data: coursesSalesData } = useCoursesSalesByTeacher("2");
-  const { data: resourcesSalesCountData } = useResourceSalesCountByTeacher("2");
+  const { data: resourcesSalesData } = useResourcesSalesByTeacher();
+  const { data: coursesSalesData } = useCoursesSalesByTeacher();
+  const { data: resourcesSalesCountData } = useResourceSalesCountByTeacher();
   const [totalSalesFromResources, setTotalSalesFromResources] = useState(0);
   const [totalSalesFromCourses, setTotalSalesFromCourses] = useState(0);
   const [salesDataToGraph, setSalesDataToGraph] = useState([]);

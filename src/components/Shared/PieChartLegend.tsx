@@ -12,7 +12,7 @@ const PieChartLegend: React.FC<PieChartLegendProps> = (props) => {
     <div className="flex gap-4 justify-center">
       {titles.map((title, index) => {
         return (
-          <div className="flex gap-2 items-center">
+          <div key={title + index} className="flex gap-2 items-center">
             <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg">
               <rect width={15} height={15} fill={colors[index]} />
             </svg>
