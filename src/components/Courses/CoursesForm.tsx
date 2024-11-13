@@ -22,7 +22,6 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
     id: "",
     title: "",
     description: "",
-    teacher_id: 1,
     resources: [],
   });
   const { mutate, data, isSuccess } = useCreateCourse();
@@ -34,11 +33,10 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
         id: "",
         title: "",
         description: "",
-        teacher_id: 2,
         resources: [],
       });
     }
-  }, [showErrors, isSuccess]);
+  }, [showErrors, isSuccess, data]);
 
   const addCourse = () => {
     const fieldErrors = [];
@@ -88,6 +86,8 @@ const CoursesForm: React.FC<CoursesFormProps> = (props) => {
                 }
               />
             </div>
+          </div>
+          <div className="w-full text-center">
             <Button onClick={addCourse}>
               <PlusCircle className="mr-2 h-4 w-4" /> Create Course
             </Button>

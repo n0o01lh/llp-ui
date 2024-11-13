@@ -32,7 +32,6 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
     price: 0,
     duration: 0,
     description: "",
-    teacher_id: 1,
     url: "empty",
   });
   const [showErrors, setShowErrors] = useState(false);
@@ -84,7 +83,6 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
         price: 0,
         duration: 0,
         description: "",
-        teacher_id: 1,
         url: "empty",
       });
 
@@ -261,9 +259,11 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
               />
             </div>
           </div>
-          <Button onClick={addResource}>
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Resource
-          </Button>
+          <div className="w-full text-center">
+            <Button onClick={addResource}>
+              <PlusCircle className="mr-2 h-4 w-4" /> Add Resource
+            </Button>
+          </div>
           {showErrors && <ValidationFields missingFields={errors} />}
         </CardContent>
       </Card>

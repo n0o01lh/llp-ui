@@ -87,7 +87,7 @@ const ResourcesEditForm = () => {
 
   useEffect(() => {
     if (mutation.isSuccess) {
-      navigate("/resources");
+      navigate("/dashboard/resources");
     }
   }, [mutation.isSuccess]);
 

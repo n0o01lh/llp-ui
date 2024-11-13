@@ -5,6 +5,8 @@ import { Alert } from "../Alert";
 import ResourcesGrid from "./ResourcesGrid";
 import ResourcesForm from "./ResourcesForm";
 import { useQueryClient } from "@tanstack/react-query";
+import { UserStoreState, useUserStore } from "@/store/userStore";
+import { jwtDecode } from "jwt-decode";
 
 export interface Resource {
   id: string;
@@ -14,14 +16,16 @@ export interface Resource {
   price: number;
   duration: number;
   description: string;
-  teacher_id: number;
   url: string;
 }
 
 const Resources = () => {
+  const userAuth = useUserStore((state: UserStoreState) => state.userAuth);
+  const teacherId = (jwtDecode(userAuth?.token as string) as { id: number }).id;
+
   const [resources, setResources] = useState<Array<Resource>>([]);
   const [data, setData] = useState<unknown>();
-  const { data: resourceList, isSuccess } = useListResourceByTeacher("1");
+  const { data: resourceList, isSuccess } = useListResourceByTeacher(teacherId);
   const queryClient = useQueryClient();
 
   useEffect(() => {

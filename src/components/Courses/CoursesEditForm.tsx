@@ -47,7 +47,7 @@ const CoursesEditForm = () => {
 
   useEffect(() => {
     if (mutation.isSuccess) {
-      navigate("/courses");
+      navigate("/dashboard/courses");
     }
   }, [mutation.isSuccess]);
 

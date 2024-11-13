@@ -25,7 +25,7 @@ const addResourcesToCourse = async (payload: unknown) => {
   return response.data;
 };
 
-const getCourseListByTeacherId = async (teacherId: string) => {
+const getCourseListByTeacherId = async (teacherId: number) => {
   return await apiClient.get("/course/list-by-teacher", {
     params: { id: teacherId },
   });
@@ -82,7 +82,7 @@ export const useGetcourse = (courseId: string) => {
   return { data: data?.data, isSuccess: isSuccess, isError: isError };
 };
 
-export const useCourseListByTeacher = (teacherId: string) => {
+export const useCourseListByTeacher = (teacherId: number) => {
   const { data, isSuccess, isError } = useQuery({
     queryKey: ["COURSE_LIST_BY_TEACHER_QUERY", teacherId],
     queryFn: () => getCourseListByTeacherId(teacherId),
