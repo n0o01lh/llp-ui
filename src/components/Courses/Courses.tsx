@@ -35,21 +35,25 @@ import {
 import { Alert } from "../Alert";
 import DeleteConfirmationDialog from "../Shared/DeleteConfirmationDialog";
 import { useNavigate } from "react-router";
+import { UserStoreState, useUserStore } from "@/store/userStore";
+import { jwtDecode } from "jwt-decode";
 
 export interface Course {
   id: string;
   title: string;
   description: string;
-  teacher_id: number;
   resources: Array<Resource>;
 }
 
 const Courses = () => {
+  const userAuth = useUserStore((state: UserStoreState) => state.userAuth);
+  const teacherId = (jwtDecode(userAuth?.token as string) as { id: number }).id;
+
   const [courses, setCourses] = useState<Array<Course>>([]);
-  const { data: resources } = useListResourceByTeacher("1");
+  const { data: resources } = useListResourceByTeacher(teacherId);
   const [saveChangesButton, setsaveChangesButton] = useState(true);
   const { mutate, isSuccess } = useAddResourcesToCourse();
-  const { data: courseList } = useCourseListByTeacher("1");
+  const { data: courseList } = useCourseListByTeacher(teacherId);
   const { mutate: deleteMutate } = useDeleteResourceFromCourse();
   const { mutate: deleteCourseMutate, isSuccess: isSuccessDeleteCourse } =
     useDeleteCourse();
@@ -174,160 +178,163 @@ const Courses = () => {
     <div>
       <CoursesForm courses={courses} setCourses={setCourses} />
 
-      <h2 className="text-2xl font-bold mb-4 dark:text-white">Courses</h2>
-      <div className="space-y-4">
-        {courses && resources ? (
-          courses.map((course: Course) => (
-            <Card key={course.id}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle>{course.title}</CardTitle>
-                <div id="buttons">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      navigate(`edit/${course.id}`);
-                    }}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setIsCourseDialogOpen(true);
-                      setCourseIdToDelete(course.id);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="mb-4">
-                  {course.description}
-                </CardDescription>
-                <h4 className="font-semibold mb-2 dark:text-white">
-                  Resources:
-                </h4>
-                <div className="space-y-2">
-                  {course.resources.map((resourceInList: Resource) => {
-                    const resource: Resource = resources.find(
-                      (r: Resource) => r.id === resourceInList.id
-                    );
-                    return resource ? (
-                      <div
-                        key={resource.id}
-                        className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-2 rounded"
-                      >
-                        <div className="flex flex-1 items-center space-x-2">
-                          {resource.resource_type === "video" && (
-                            <Video className="h-4 w-4 text-blue-500" />
-                          )}
-                          {resource.resource_type === "audio" && (
-                            <Headphones className="h-4 w-4 text-green-500" />
-                          )}
-                          {resource.resource_type === "document" && (
-                            <FileText className="h-4 w-4 text-yellow-500" />
-                          )}
-                          <span className="font-medium dark:text-white">
-                            {resource.title}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <span className="text-sm dark:text-gray-300">
-                            ${resource.price}
-                          </span>
-                          {(resource.resource_type === "video" ||
-                            resource.resource_type === "audio") && (
-                            <span className="text-sm dark:text-gray-300">
-                              {resource.duration} min
-                            </span>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setIsDialogOpen(true);
-                              setCourseIdFromDelete(course.id);
-                              setResourceIdToDelete(resource.id);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-                <Select
-                  onValueChange={(value) =>
-                    addResourceToCourse(course.id, parseInt(value))
-                  }
-                >
-                  <SelectTrigger className="w-full mt-4">
-                    <SelectValue placeholder="Add resource to course" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {resources
-                      .filter((r: Resource) => {
-                        return !course.resources.some(
-                          (resource: Resource) => resource.id === r.id
-                        );
-                      })
-                      .map((resource: Resource) => (
-                        <SelectItem
+      {!(courses && resources) && <span>Loading...</span>}
+      {courses && resources ? (
+        <div>
+          <h2 className="text-2xl font-bold mb-4 dark:text-white">Courses</h2>
+          <div className="space-y-4">
+            {courses.map((course: Course) => (
+              <Card key={course.id}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle>{course.title}</CardTitle>
+                  <div id="buttons">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        navigate(`edit/${course.id}`);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setIsCourseDialogOpen(true);
+                        setCourseIdToDelete(course.id);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="mb-4">
+                    {course.description}
+                  </CardDescription>
+                  <h4 className="font-semibold mb-2 dark:text-white">
+                    Resources:
+                  </h4>
+                  <div className="space-y-2">
+                    {course.resources.map((resourceInList: Resource) => {
+                      const resource: Resource = resources.find(
+                        (r: Resource) => r.id === resourceInList.id
+                      );
+                      return resource ? (
+                        <div
                           key={resource.id}
-                          value={resource.id.toString()}
+                          className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-2 rounded"
                         >
-                          {resource.title}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </CardContent>
-              <CardFooter>
-                <div className="flex items-center justify-end w-full gap-10">
-                  <span className="font-semibold dark:text-white">
-                    Total Price: ${calculateTotalPrice(course.resources)}
-                  </span>
-
-                  <Button
-                    disabled={saveChangesButton}
-                    onClick={() => saveChanges(course.id)}
+                          <div className="flex flex-1 items-center space-x-2">
+                            {resource.resource_type === "video" && (
+                              <Video className="h-4 w-4 text-blue-500" />
+                            )}
+                            {resource.resource_type === "audio" && (
+                              <Headphones className="h-4 w-4 text-green-500" />
+                            )}
+                            {resource.resource_type === "document" && (
+                              <FileText className="h-4 w-4 text-yellow-500" />
+                            )}
+                            <span className="font-medium dark:text-white">
+                              {resource.title}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <span className="text-sm dark:text-gray-300">
+                              ${resource.price}
+                            </span>
+                            {(resource.resource_type === "video" ||
+                              resource.resource_type === "audio") && (
+                              <span className="text-sm dark:text-gray-300">
+                                {resource.duration} min
+                              </span>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setIsDialogOpen(true);
+                                setCourseIdFromDelete(course.id);
+                                setResourceIdToDelete(resource.id);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+                  <Select
+                    onValueChange={(value) =>
+                      addResourceToCourse(course.id, parseInt(value))
+                    }
                   >
-                    <Save className="mr-2 h-4 w-4" /> Save changes
-                  </Button>
-                </div>
-              </CardFooter>
-            </Card>
-          ))
-        ) : (
-          <></>
-        )}
-        <DeleteConfirmationDialog
-          message={`This action will remove the resource "${getResourceNameFromId(
-            resourceIdToDelete
-          )}"
+                    <SelectTrigger className="w-full mt-4">
+                      <SelectValue placeholder="Add resource to course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {resources
+                        .filter((r: Resource) => {
+                          return !course.resources.some(
+                            (resource: Resource) => resource.id === r.id
+                          );
+                        })
+                        .map((resource: Resource) => (
+                          <SelectItem
+                            key={resource.id}
+                            value={resource.id.toString()}
+                          >
+                            {resource.title}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+                <CardFooter>
+                  <div className="flex items-center justify-end w-full gap-10">
+                    <span className="font-semibold dark:text-white">
+                      Total Price: ${calculateTotalPrice(course.resources)}
+                    </span>
+
+                    <Button
+                      disabled={saveChangesButton}
+                      onClick={() => saveChanges(course.id)}
+                    >
+                      <Save className="mr-2 h-4 w-4" /> Save changes
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
+      <DeleteConfirmationDialog
+        message={`This action will remove the resource "${getResourceNameFromId(
+          resourceIdToDelete
+        )}"
             from this course. You must to press "Save changes" button to take effect.`}
-          onConfirm={removeResourceFromCourse}
-          onCancel={handleCancel}
-          isOpen={isDialogOpen}
-          setIsOpen={setIsDialogOpen}
-        />
+        onConfirm={removeResourceFromCourse}
+        onCancel={handleCancel}
+        isOpen={isDialogOpen}
+        setIsOpen={setIsDialogOpen}
+      />
 
-        <DeleteConfirmationDialog
-          message={`This action will remove the course "${getCourseNameFromId(
-            courseIdToDelete
-          )}".This action cannot be undone.`}
-          onConfirm={deleteCourse}
-          onCancel={handleCancel}
-          isOpen={isCourseDialogOpen}
-          setIsOpen={setIsCourseDialogOpen}
-        />
+      <DeleteConfirmationDialog
+        message={`This action will remove the course "${getCourseNameFromId(
+          courseIdToDelete
+        )}".This action cannot be undone.`}
+        onConfirm={deleteCourse}
+        onCancel={handleCancel}
+        isOpen={isCourseDialogOpen}
+        setIsOpen={setIsCourseDialogOpen}
+      />
 
-        {isSuccess && <Alert message="Changes saved" duration={5} />}
-      </div>
+      {isSuccess && <Alert message="Changes saved" duration={5} />}
     </div>
   );
 };

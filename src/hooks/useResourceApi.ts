@@ -23,7 +23,7 @@ const getResource = async (resourceId: string) => {
   });
 };
 
-const getResourceListByTeacherId = async (teacherId: string) => {
+const getResourceListByTeacherId = async (teacherId: number) => {
   return await apiClient.get("/resource/list-by-teacher", {
     params: { id: teacherId },
   });
@@ -66,7 +66,7 @@ export const useGetResource = (resourceId: string) => {
   return { data: data?.data, isSuccess: isSuccess, isError: isError };
 };
 
-export const useListResourceByTeacher = (teacherId: string) => {
+export const useListResourceByTeacher = (teacherId: number) => {
   const { data, isSuccess, isError } = useQuery({
     queryKey: ["RESOURCES_LIST_BY_TEACHER_QUERY", teacherId],
     queryFn: () => getResourceListByTeacherId(teacherId),
