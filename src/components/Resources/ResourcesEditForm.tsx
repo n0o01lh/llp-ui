@@ -16,6 +16,7 @@ import { Resource } from "./Resources";
 import { useNavigate, useParams } from "react-router";
 import { useEditResource, useGetResource } from "@/hooks/useResourceApi";
 import ValidationFields from "../ValidationFields";
+import TextEditor from "../Shared/TextEditor";
 
 const ResourcesEditForm = () => {
   const [resource, setResource] = useState<Resource>();
@@ -123,6 +124,7 @@ const ResourcesEditForm = () => {
                     <SelectItem value="video">Video</SelectItem>
                     <SelectItem value="audio">Audio</SelectItem>
                     <SelectItem value="document">Document</SelectItem>
+                    <SelectItem value="reading">Reading</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -191,29 +193,35 @@ const ResourcesEditForm = () => {
                   }
                 />
               </div>
-              <div>
-                <Label htmlFor="resourceDuration">
-                  Resource Duration (minutes)
-                </Label>
-                <Input
-                  id="resourceDuration"
-                  type="number"
-                  min="0"
-                  step="1"
-                  placeholder="Duration"
-                  value={resource?.duration}
-                  onChange={(e) =>
-                    setResource({
-                      ...resource!,
-                      duration: parseInt(e.target.value),
-                    })
-                  }
-                  required={
-                    resource?.resource_type === "video" ||
-                    resource?.resource_type === "audio"
-                  }
-                />
-              </div>
+              {resource?.resource_type === "video" ||
+              resource?.resource_type === "audio" ? (
+                <div className="col-span-2 md:col-span-1">
+                  <Label htmlFor="resourceDuration">
+                    Resource Duration (minutes)
+                  </Label>
+                  <Input
+                    id="resourceDuration"
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="Duration"
+                    value={resource?.duration}
+                    onChange={(e) =>
+                      setResource({
+                        ...resource!,
+                        duration: parseInt(e.target.value),
+                      })
+                    }
+                    required={
+                      resource?.resource_type === "video" ||
+                      resource?.resource_type === "audio"
+                    }
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
+
               <div className="md:col-span-2">
                 <Label htmlFor="resourceDescription">
                   Resource Description
@@ -230,6 +238,22 @@ const ResourcesEditForm = () => {
                   }
                 />
               </div>
+              {resource?.resource_type === "reading" ? (
+                <div className="col-span-2">
+                  <Label htmlFor="resourceContent">Reading Content</Label>
+                  <TextEditor
+                    value={resource?.content}
+                    onChange={(e) =>
+                      setResource({
+                        ...resource!,
+                        content: e,
+                      })
+                    }
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
             <div className="mx-auto w-fit">
               <Button onClick={editResource}>

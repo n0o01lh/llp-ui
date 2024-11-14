@@ -22,6 +22,7 @@ import {
   FileText,
   Save,
   Pencil,
+  BookMarked,
 } from "lucide-react";
 import { Resource } from "../Resources/Resources";
 import { useListResourceByTeacher } from "@/hooks/useResourceApi";
@@ -235,6 +236,9 @@ const Courses = () => {
                             )}
                             {resource.resource_type === "document" && (
                               <FileText className="h-4 w-4 text-yellow-500" />
+                            )}
+                            {resource.resource_type === "reading" && (
+                              <BookMarked className="h-4 w-4 text-cyan-500" />
                             )}
                             <span className="font-medium dark:text-white">
                               {resource.title}
