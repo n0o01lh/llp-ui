@@ -7,6 +7,7 @@ import {
   Clock,
   DollarSign,
   Pen,
+  BookMarked,
 } from "lucide-react";
 import {
   Card,
@@ -55,7 +56,9 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
     <div>
       {isSuccess ? (
         <div>
-          <h2 className="text-2xl font-bold mb-4 dark:text-white">Resources</h2>
+          <p className="mb-4 text-gray-600">
+            These are your resources, you can edit or delete them if you want.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {resources.map((resource: Resource) => (
               <Card
@@ -108,6 +111,9 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
                       )}
                       {resource.resource_type === "document" && (
                         <FileText className="h-4 w-4 text-yellow-500" />
+                      )}
+                      {resource.resource_type === "reading" && (
+                        <BookMarked className="h-4 w-4 text-cyan-500" />
                       )}
                       <span className="text-sm font-medium">
                         {resource.resource_type}

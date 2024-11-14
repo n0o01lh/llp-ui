@@ -3,10 +3,12 @@ import { useListResourceByTeacher } from "@/hooks/useResourceApi";
 import { Alert } from "../Alert";
 
 import ResourcesGrid from "./ResourcesGrid";
-import ResourcesForm from "./ResourcesForm";
 import { useQueryClient } from "@tanstack/react-query";
 import { UserStoreState, useUserStore } from "@/store/userStore";
 import { jwtDecode } from "jwt-decode";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
+import { useNavigate } from "react-router";
 
 export interface Resource {
   id: string;
@@ -16,7 +18,7 @@ export interface Resource {
   price: number;
   duration: number;
   description: string;
-  url: string;
+  content: string;
 }
 
 const Resources = () => {
@@ -24,9 +26,10 @@ const Resources = () => {
   const teacherId = (jwtDecode(userAuth?.token as string) as { id: number }).id;
 
   const [resources, setResources] = useState<Array<Resource>>([]);
-  const [data, setData] = useState<unknown>();
+  const [data] = useState<unknown>();
   const { data: resourceList, isSuccess } = useListResourceByTeacher(teacherId);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   useEffect(() => {
     queryClient.invalidateQueries({
@@ -36,11 +39,16 @@ const Resources = () => {
 
   return (
     <div>
-      <ResourcesForm
-        resources={resources}
-        setResources={setResources}
-        setData={setData}
-      />
+      <div className="flex justify-between">
+        <h2 className="text-2xl font-bold mb-4 dark:text-white">
+          Your Resources
+        </h2>
+
+        <Button onClick={() => navigate("new", { relative: "route" })}>
+          <Plus className="mr-2 h-4 w-4" /> Create new resource
+        </Button>
+      </div>
+
       <ResourcesGrid
         isSuccess={isSuccess}
         resources={resourceList}

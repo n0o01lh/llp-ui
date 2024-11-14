@@ -16,6 +16,7 @@ import RootRedirection from "./RootRedirection.tsx";
 import Forbidden from "./components/Forbidden.tsx";
 import { ROLES } from "./components/Shared/Constants.tsx";
 import TopMenu from "./components/Shared/TopMenu.tsx";
+import ResourcesForm from "./components/Resources/ResourcesForm.tsx";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
           {
             path: "resources",
             element: <Resources />,
+          },
+          {
+            path: "resources/new",
+            element: <ResourcesForm />,
           },
           {
             path: "resources/edit/:id",

@@ -14,16 +14,19 @@ import { PlusCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ValidationFields from "../ValidationFields";
 import { useCreateResource } from "@/hooks/useResourceApi";
-import { Resource } from "./Resources";
+//import { Resource } from "./Resources";
+import TextEditor from "../Shared/TextEditor";
+import { useNavigate } from "react-router";
+import Loader from "../Shared/Loader";
 
-interface ResourcesFormProps {
+/* interface ResourcesFormProps {
   resources: Array<Resource>;
   setResources: (resources: Array<Resource>) => void;
   setData: (data: unknown) => void;
-}
+} */
 
-const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
-  const { resources, setResources, setData } = props;
+const ResourcesForm = () => {
+  //const { resources, setResources, setData } = props;
   const [newResource, setNewResource] = useState({
     id: "",
     resource_type: "video",
@@ -32,13 +35,14 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
     price: 0,
     duration: 0,
     description: "",
-    url: "empty",
+    content: "empty",
   });
   const [showErrors, setShowErrors] = useState(false);
   const [errors, setErrors] = useState<Array<string>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { data, mutate, isSuccess } = useCreateResource();
+  const { mutate, isSuccess, isPending } = useCreateResource();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleFileUpload = (event: React.FormEvent<HTMLInputElement>) => {
     const input = event.target as HTMLInputElement;
@@ -70,11 +74,11 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
 
   const addResource = () => {
     if (newResource.title && isValidResource()) {
-      setResources([
+      /*       setResources([
         ...resources,
         { ...newResource, id: Date.now().toString() },
       ]);
-
+ */
       setNewResource({
         id: "",
         resource_type: "video",
@@ -83,7 +87,7 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
         price: 0,
         duration: 0,
         description: "",
-        url: "empty",
+        content: "empty",
       });
 
       if (fileInputRef.current) {
@@ -127,8 +131,10 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
   };
 
   useEffect(() => {
-    setData(data);
-  }, [isSuccess]);
+    if (isSuccess) {
+      navigate("/dashboard/resources");
+    }
+  }, [isSuccess, navigate]);
 
   return (
     <div>
@@ -136,136 +142,163 @@ const ResourcesForm: React.FC<ResourcesFormProps> = (props) => {
         Create Resource
       </h2>
       <Card className="mb-8">
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <Label htmlFor="resourceType">Resource Type</Label>
-              <Select
-                value={newResource.resource_type}
-                onValueChange={(value) =>
-                  setNewResource({ ...newResource, resource_type: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Resource Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="video">Video</SelectItem>
-                  <SelectItem value="audio">Audio</SelectItem>
-                  <SelectItem value="document">Document</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="resourceName">Resource Name</Label>
-              <Input
-                id="resourceName"
-                placeholder="Resource Name"
-                value={newResource.title}
-                onChange={(e) =>
-                  setNewResource({ ...newResource, title: e.target.value })
-                }
-              />
-            </div>
-            <div className="col-span-2">
-              <Label htmlFor="resourceImageUpload">Upload Image</Label>
-              <div className="mt-2 flex items-center gap-4">
-                <Input
-                  id="resourceImageUpload"
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleFileUpload}
-                  className="flex-1"
-                />
-                {imagePreview && (
-                  <div className="relative w-32 h-32">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-full object-cover rounded"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-0 right-0 bg-black bg-opacity-50 text-white rounded-full p-1"
-                      onClick={() => {
-                        setImagePreview(null);
-                        setNewResource({ ...newResource, image: "" });
-                        if (fileInputRef.current) {
-                          fileInputRef.current.value = "";
-                        }
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                      <span className="sr-only">Remove image</span>
-                    </Button>
-                  </div>
-                )}
+        {isPending ? (
+          <Loader />
+        ) : (
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="col-span-2 md:col-span-1">
+                <Label htmlFor="resourceType">Resource Type</Label>
+                <Select
+                  value={newResource.resource_type}
+                  onValueChange={(value) =>
+                    setNewResource({ ...newResource, resource_type: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Resource Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="video">Video</SelectItem>
+                    <SelectItem value="audio">Audio</SelectItem>
+                    <SelectItem value="document">Document</SelectItem>
+                    <SelectItem value="reading">Reading</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+              <div className="col-span-2 md:col-span-1">
+                <Label htmlFor="resourceName">Resource Name</Label>
+                <Input
+                  id="resourceName"
+                  placeholder="Resource Name"
+                  value={newResource.title}
+                  onChange={(e) =>
+                    setNewResource({ ...newResource, title: e.target.value })
+                  }
+                />
+              </div>
+              <div className="col-span-2">
+                <Label htmlFor="resourceImageUpload">Upload Image</Label>
+                <div className="mt-2 flex items-center gap-4">
+                  <Input
+                    id="resourceImageUpload"
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    className="flex-1"
+                  />
+                  {imagePreview && (
+                    <div className="relative w-32 h-32">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover rounded"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-0 right-0 bg-black bg-opacity-50 text-white rounded-full p-1"
+                        onClick={() => {
+                          setImagePreview(null);
+                          setNewResource({ ...newResource, image: "" });
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                        <span className="sr-only">Remove image</span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="col-span-2 md:col-span-1">
+                <Label htmlFor="resourcePrice">Resource Price</Label>
+                <Input
+                  id="resourcePrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Price"
+                  value={newResource.price}
+                  onChange={(e) =>
+                    setNewResource({
+                      ...newResource,
+                      price: Number.parseInt(e.target.value),
+                    })
+                  }
+                />
+              </div>
+              {newResource.resource_type === "video" ||
+              newResource.resource_type === "audio" ? (
+                <div className="col-span-2 md:col-span-1">
+                  <Label htmlFor="resourceDuration">
+                    Resource Duration (minutes)
+                  </Label>
+                  <Input
+                    id="resourceDuration"
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="Duration"
+                    value={newResource.duration}
+                    onChange={(e) =>
+                      setNewResource({
+                        ...newResource,
+                        duration: parseInt(e.target.value),
+                      })
+                    }
+                    required={
+                      newResource.resource_type === "video" ||
+                      newResource.resource_type === "audio"
+                    }
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
+              <div className="col-span-2">
+                <Label htmlFor="resourceDescription">
+                  Resource Description
+                </Label>
+                <Textarea
+                  id="resourceDescription"
+                  placeholder="Brief description"
+                  value={newResource.description}
+                  onChange={(e) =>
+                    setNewResource({
+                      ...newResource,
+                      description: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              {newResource.resource_type === "reading" ? (
+                <div className="col-span-2">
+                  <Label htmlFor="resourceContent">Reading Content</Label>
+                  <TextEditor
+                    onChange={(e) =>
+                      setNewResource({
+                        ...newResource,
+                        content: e,
+                      })
+                    }
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
             </div>
-            <div>
-              <Label htmlFor="resourcePrice">Resource Price</Label>
-              <Input
-                id="resourcePrice"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="Price"
-                value={newResource.price}
-                onChange={(e) =>
-                  setNewResource({
-                    ...newResource,
-                    price: Number.parseInt(e.target.value),
-                  })
-                }
-              />
+            <div className="w-full text-center">
+              <Button onClick={addResource}>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add Resource
+              </Button>
             </div>
-            <div>
-              <Label htmlFor="resourceDuration">
-                Resource Duration (minutes)
-              </Label>
-              <Input
-                id="resourceDuration"
-                type="number"
-                min="0"
-                step="1"
-                placeholder="Duration"
-                value={newResource.duration}
-                onChange={(e) =>
-                  setNewResource({
-                    ...newResource,
-                    duration: parseInt(e.target.value),
-                  })
-                }
-                required={
-                  newResource.resource_type === "video" ||
-                  newResource.resource_type === "audio"
-                }
-              />
-            </div>
-            <div className="md:col-span-2">
-              <Label htmlFor="resourceDescription">Resource Description</Label>
-              <Textarea
-                id="resourceDescription"
-                placeholder="Brief description"
-                value={newResource.description}
-                onChange={(e) =>
-                  setNewResource({
-                    ...newResource,
-                    description: e.target.value,
-                  })
-                }
-              />
-            </div>
-          </div>
-          <div className="w-full text-center">
-            <Button onClick={addResource}>
-              <PlusCircle className="mr-2 h-4 w-4" /> Add Resource
-            </Button>
-          </div>
-          {showErrors && <ValidationFields missingFields={errors} />}
-        </CardContent>
+            {showErrors && <ValidationFields missingFields={errors} />}
+          </CardContent>
+        )}
       </Card>
     </div>
   );
