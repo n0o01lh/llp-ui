@@ -18,6 +18,7 @@ import { useCreateResource } from "@/hooks/useResourceApi";
 import TextEditor from "../Shared/TextEditor";
 import { useNavigate } from "react-router";
 import Loader from "../Shared/Loader";
+import QuizForm, { Quiz } from "./QuizForm";
 
 /* interface ResourcesFormProps {
   resources: Array<Resource>;
@@ -163,6 +164,7 @@ const ResourcesForm = () => {
                     <SelectItem value="audio">Audio</SelectItem>
                     <SelectItem value="document">Document</SelectItem>
                     <SelectItem value="reading">Reading</SelectItem>
+                    <SelectItem value="quiz">Quiz</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -283,6 +285,21 @@ const ResourcesForm = () => {
                       setNewResource({
                         ...newResource,
                         content: e,
+                      })
+                    }
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
+              {newResource.resource_type === "quiz" ? (
+                <div className="col-span-2">
+                  <Label htmlFor="resourceQuiz">Create your Quiz</Label>
+                  <QuizForm
+                    setCurrentQuiz={(quiz: Quiz) =>
+                      setNewResource({
+                        ...newResource,
+                        content: JSON.stringify(quiz),
                       })
                     }
                   />
