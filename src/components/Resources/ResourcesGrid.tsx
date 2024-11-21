@@ -8,6 +8,7 @@ import {
   DollarSign,
   Pen,
   BookMarked,
+  SquareActivity,
 } from "lucide-react";
 import {
   Card,
@@ -114,6 +115,9 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
                       )}
                       {resource.resource_type === "reading" && (
                         <BookMarked className="h-4 w-4 text-cyan-500" />
+                      )}
+                      {resource.resource_type === "quiz" && (
+                        <SquareActivity className="h-4 w-4 text-indigo-500" />
                       )}
                       <span className="text-sm font-medium">
                         {resource.resource_type}

@@ -23,6 +23,7 @@ import {
   Save,
   Pencil,
   BookMarked,
+  SquareActivity,
 } from "lucide-react";
 import { Resource } from "../Resources/Resources";
 import { useListResourceByTeacher } from "@/hooks/useResourceApi";
@@ -239,6 +240,9 @@ const Courses = () => {
                             )}
                             {resource.resource_type === "reading" && (
                               <BookMarked className="h-4 w-4 text-cyan-500" />
+                            )}
+                            {resource.resource_type === "quiz" && (
+                              <SquareActivity className="h-4 w-4 text-indigo-500" />
                             )}
                             <span className="font-medium dark:text-white">
                               {resource.title}

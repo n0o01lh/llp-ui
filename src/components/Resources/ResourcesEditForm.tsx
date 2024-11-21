@@ -17,6 +17,7 @@ import { useNavigate, useParams } from "react-router";
 import { useEditResource, useGetResource } from "@/hooks/useResourceApi";
 import ValidationFields from "../ValidationFields";
 import TextEditor from "../Shared/TextEditor";
+import QuizForm, { Quiz } from "./QuizForm";
 
 const ResourcesEditForm = () => {
   const [resource, setResource] = useState<Resource>();
@@ -125,6 +126,7 @@ const ResourcesEditForm = () => {
                     <SelectItem value="audio">Audio</SelectItem>
                     <SelectItem value="document">Document</SelectItem>
                     <SelectItem value="reading">Reading</SelectItem>
+                    <SelectItem value="quiz">Quiz</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -247,6 +249,22 @@ const ResourcesEditForm = () => {
                       setResource({
                         ...resource!,
                         content: e,
+                      })
+                    }
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
+              {resource?.resource_type === "quiz" ? (
+                <div className="col-span-2">
+                  <Label htmlFor="resourceQuiz">Create your Quiz</Label>
+                  <QuizForm
+                    currentQuiz={JSON.parse(resource.content) as Quiz}
+                    setCurrentQuiz={(quiz: Quiz) =>
+                      setResource({
+                        ...resource!,
+                        content: JSON.stringify(quiz),
                       })
                     }
                   />
