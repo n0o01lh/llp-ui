@@ -25,11 +25,20 @@ const Resources = () => {
   const userAuth = useUserStore((state: UserStoreState) => state.userAuth);
   const teacherId = (jwtDecode(userAuth?.token as string) as { id: number }).id;
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [resources, setResources] = useState<Array<Resource>>([]);
   const [data] = useState<unknown>();
-  const { data: resourceList, isSuccess } = useListResourceByTeacher(teacherId);
+  const {
+    data: resourceList,
+    isSuccess,
+    refetch,
+  } = useListResourceByTeacher(teacherId, currentPage);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    refetch();
+  }, [currentPage, refetch]);
 
   useEffect(() => {
     queryClient.invalidateQueries({
@@ -53,6 +62,7 @@ const Resources = () => {
         isSuccess={isSuccess}
         resources={resourceList}
         setResources={setResources}
+        updateResourcesPage={setCurrentPage}
       />
 
       {data != undefined && <Alert message="Resource Created" duration={5} />}

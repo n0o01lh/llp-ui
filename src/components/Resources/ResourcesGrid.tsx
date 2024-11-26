@@ -23,15 +23,17 @@ import { useDeleteResource } from "@/hooks/useResourceApi";
 import DeleteConfirmationDialog from "../Shared/DeleteConfirmationDialog";
 import { Alert } from "../Alert";
 import { useNavigate } from "react-router";
+import Paginator, { PaginatorResult } from "../Shared/Paginator";
 
 interface ResourcesGridProps {
-  resources: Array<Resource>;
+  resources: PaginatorResult;
   isSuccess: boolean;
   setResources: (resources: Array<Resource>) => void;
+  updateResourcesPage: (page: number) => void;
 }
 
 const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
-  const { resources, setResources, isSuccess } = props;
+  const { resources, setResources, isSuccess, updateResourcesPage } = props;
   const [idToDelete, setIdToDelete] = useState<string>();
   const [titleToDelete, setTitleToDelete] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -48,7 +50,7 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
 
   useEffect(() => {
     if (deleteSuccess) {
-      setResources(resources.filter((r) => r.id !== idToDelete));
+      setResources(resources.rows.filter((r) => r.id !== idToDelete));
       setIsDialogOpen(false);
     }
   }, [deleteSuccess]);
@@ -61,7 +63,7 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
             These are your resources, you can edit or delete them if you want.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {resources.map((resource: Resource) => (
+            {resources.rows.map((resource: Resource) => (
               <Card
                 key={resource.id}
                 className="relative overflow-hidden group"
@@ -142,6 +144,11 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
               </Card>
             ))}
           </div>
+          <Paginator
+            currentPage={resources.page}
+            totalPages={resources.totalPages}
+            onPageChange={updateResourcesPage}
+          />
         </div>
       ) : (
         <div>Loading....</div>
