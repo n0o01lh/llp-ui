@@ -23,9 +23,12 @@ const getResource = async (resourceId: string) => {
   });
 };
 
-const getResourceListByTeacherId = async (teacherId: number) => {
+const getResourceListByTeacherId = async (
+  teacherId: number,
+  pageNumber: number
+) => {
   return await apiClient.get("/resource/list-by-teacher", {
-    params: { id: teacherId },
+    params: { id: teacherId, page: pageNumber, limit: 9 },
   });
 };
 
@@ -66,13 +69,16 @@ export const useGetResource = (resourceId: string) => {
   return { data: data?.data, isSuccess: isSuccess, isError: isError };
 };
 
-export const useListResourceByTeacher = (teacherId: number) => {
-  const { data, isSuccess, isError } = useQuery({
-    queryKey: ["RESOURCES_LIST_BY_TEACHER_QUERY", teacherId],
-    queryFn: () => getResourceListByTeacherId(teacherId),
+export const useListResourceByTeacher = (
+  teacherId: number,
+  pageNumber: number
+) => {
+  const { data, isSuccess, isError, refetch } = useQuery({
+    queryKey: ["RESOURCES_LIST_BY_TEACHER_QUERY", pageNumber],
+    queryFn: () => getResourceListByTeacherId(teacherId, pageNumber),
   });
 
-  return { data: data?.data, isSuccess: isSuccess, isError: isError };
+  return { data: data?.data, isSuccess: isSuccess, isError: isError, refetch };
 };
 
 export const useDeleteResource = () => {
