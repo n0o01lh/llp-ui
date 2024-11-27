@@ -39,6 +39,7 @@ import DeleteConfirmationDialog from "../Shared/DeleteConfirmationDialog";
 import { useNavigate } from "react-router";
 import { UserStoreState, useUserStore } from "@/store/userStore";
 import { jwtDecode } from "jwt-decode";
+import Paginator from "../Shared/Paginator";
 
 export interface Course {
   id: string;
@@ -52,10 +53,18 @@ const Courses = () => {
   const teacherId = (jwtDecode(userAuth?.token as string) as { id: number }).id;
 
   const [courses, setCourses] = useState<Array<Course>>([]);
-  const { data: resources } = useListResourceByTeacher(teacherId);
+  const { data: resources } = useListResourceByTeacher(
+    teacherId,
+    undefined,
+    -1
+  );
   const [saveChangesButton, setsaveChangesButton] = useState(true);
   const { mutate, isSuccess } = useAddResourcesToCourse();
-  const { data: courseList } = useCourseListByTeacher(teacherId);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: courseList, refetch } = useCourseListByTeacher(
+    teacherId,
+    currentPage
+  );
   const { mutate: deleteMutate } = useDeleteResourceFromCourse();
   const { mutate: deleteCourseMutate, isSuccess: isSuccessDeleteCourse } =
     useDeleteCourse();
@@ -73,8 +82,14 @@ const Courses = () => {
   };
 
   useEffect(() => {
-    setCourses(courseList);
+    if (courseList) {
+      setCourses(courseList.rows);
+    }
   }, [courseList]);
+
+  useEffect(() => {
+    refetch();
+  }, [currentPage, refetch]);
 
   useEffect(() => {
     if (isSuccessDeleteCourse) {
@@ -83,7 +98,7 @@ const Courses = () => {
   }, [isSuccessDeleteCourse]);
 
   const addResourceToCourse = (courseId: string, resourceId: number) => {
-    const resource = resources.find((r: Resource) => {
+    const resource = resources.rows.find((r: Resource) => {
       return parseInt(r.id) === resourceId;
     });
 
@@ -138,7 +153,7 @@ const Courses = () => {
   const calculateTotalPrice = (resourcesList: Array<Resource>) => {
     return resourcesList
       .reduce((total, resourceId) => {
-        const resource = resources.find(
+        const resource = resources.rows.find(
           (r: Resource) => r.id === resourceId.id
         );
         return total + (resource ? parseFloat(resource.price) || 0 : 0);
@@ -165,7 +180,7 @@ const Courses = () => {
   };
 
   const getResourceNameFromId = (resourceId: string) => {
-    const resource = resources?.find(
+    const resource = resources?.rows.find(
       (resource: Resource) => resource.id === resourceId
     );
     return resource?.title;
@@ -220,7 +235,7 @@ const Courses = () => {
                   </h4>
                   <div className="space-y-2">
                     {course.resources.map((resourceInList: Resource) => {
-                      const resource: Resource = resources.find(
+                      const resource: Resource = resources.rows.find(
                         (r: Resource) => r.id === resourceInList.id
                       );
                       return resource ? (
@@ -283,7 +298,7 @@ const Courses = () => {
                       <SelectValue placeholder="Add resource to course" />
                     </SelectTrigger>
                     <SelectContent>
-                      {resources
+                      {resources.rows
                         .filter((r: Resource) => {
                           return !course.resources.some(
                             (resource: Resource) => resource.id === r.id
@@ -317,6 +332,11 @@ const Courses = () => {
               </Card>
             ))}
           </div>
+          <Paginator
+            currentPage={courseList?.page}
+            totalPages={courseList?.totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
       ) : (
         <></>

@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -21,7 +20,6 @@ export default function Paginator({
   totalPages,
   onPageChange = () => {},
 }: PaginatorProps) {
-  console.log(totalPages);
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   const handlePageChange = (page: number) => {
@@ -43,7 +41,6 @@ export default function Paginator({
         className="hidden sm:inline-flex"
       >
         <ChevronLeft className="h-4 w-4" />
-        <span className="sr-only">Previous page</span>
       </Button>
 
       {pageNumbers.map((page) => {
@@ -66,9 +63,6 @@ export default function Paginator({
             } ${showOnMobile ? "" : "hidden sm:inline-flex"}`}
           >
             {page}
-            {page === currentPage && (
-              <span className="sr-only">(current page)</span>
-            )}
           </Button>
         );
       })}
@@ -81,7 +75,6 @@ export default function Paginator({
         className="hidden sm:inline-flex"
       >
         <ChevronRight className="h-4 w-4" />
-        <span className="sr-only">Next page</span>
       </Button>
 
       {/* Mobile-specific previous/next buttons */}
