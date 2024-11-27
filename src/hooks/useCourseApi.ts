@@ -25,9 +25,13 @@ const addResourcesToCourse = async (payload: unknown) => {
   return response.data;
 };
 
-const getCourseListByTeacherId = async (teacherId: number) => {
+const getCourseListByTeacherId = async (
+  teacherId: number,
+  pageNumber: number,
+  limit: number
+) => {
   return await apiClient.get("/course/list-by-teacher", {
-    params: { id: teacherId },
+    params: { id: teacherId, page: pageNumber, limit: limit },
   });
 };
 
@@ -82,13 +86,23 @@ export const useGetcourse = (courseId: string) => {
   return { data: data?.data, isSuccess: isSuccess, isError: isError };
 };
 
-export const useCourseListByTeacher = (teacherId: number) => {
-  const { data, isSuccess, isError } = useQuery({
+export const useCourseListByTeacher = (
+  teacherId: number,
+  pageNumber?: number,
+  limit?: number
+) => {
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  if (!limit) {
+    limit = 9;
+  }
+  const { data, isSuccess, isError, refetch } = useQuery({
     queryKey: ["COURSE_LIST_BY_TEACHER_QUERY", teacherId],
-    queryFn: () => getCourseListByTeacherId(teacherId),
+    queryFn: () => getCourseListByTeacherId(teacherId, pageNumber, limit),
   });
 
-  return { data: data?.data, isSuccess: isSuccess, isError: isError };
+  return { data: data?.data, isSuccess: isSuccess, isError: isError, refetch };
 };
 
 export const useAddResourcesToCourse = () => {

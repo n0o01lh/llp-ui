@@ -25,10 +25,11 @@ const getResource = async (resourceId: string) => {
 
 const getResourceListByTeacherId = async (
   teacherId: number,
-  pageNumber: number
+  pageNumber: number,
+  limit: number
 ) => {
   return await apiClient.get("/resource/list-by-teacher", {
-    params: { id: teacherId, page: pageNumber, limit: 9 },
+    params: { id: teacherId, page: pageNumber, limit: limit },
   });
 };
 
@@ -71,11 +72,18 @@ export const useGetResource = (resourceId: string) => {
 
 export const useListResourceByTeacher = (
   teacherId: number,
-  pageNumber: number
+  pageNumber?: number,
+  limit?: number
 ) => {
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  if (!limit) {
+    limit = 9;
+  }
   const { data, isSuccess, isError, refetch } = useQuery({
     queryKey: ["RESOURCES_LIST_BY_TEACHER_QUERY", pageNumber],
-    queryFn: () => getResourceListByTeacherId(teacherId, pageNumber),
+    queryFn: () => getResourceListByTeacherId(teacherId, pageNumber, limit),
   });
 
   return { data: data?.data, isSuccess: isSuccess, isError: isError, refetch };
