@@ -33,6 +33,22 @@ const getResourceListByTeacherId = async (
   });
 };
 
+const getSearchResourceListByTeacherId = async (
+  criteria: string,
+  teacherId: number,
+  pageNumber: number,
+  limit: number
+) => {
+  return await apiClient.get("/resource/search", {
+    params: {
+      title: criteria,
+      teacher: teacherId,
+      page: pageNumber,
+      limit: limit,
+    },
+  });
+};
+
 const deleteResource = async (resourceId: number) => {
   return await apiClient.delete(`/resource/delete/${resourceId}`);
 };
@@ -81,12 +97,47 @@ export const useListResourceByTeacher = (
   if (!limit) {
     limit = 9;
   }
-  const { data, isSuccess, isError, refetch } = useQuery({
-    queryKey: ["RESOURCES_LIST_BY_TEACHER_QUERY", pageNumber],
+  const { data, isSuccess, isError, refetch, isRefetching } = useQuery({
+    queryKey: ["RESOURCES_LIST_BY_TEACHER_QUERY"],
     queryFn: () => getResourceListByTeacherId(teacherId, pageNumber, limit),
   });
 
-  return { data: data?.data, isSuccess: isSuccess, isError: isError, refetch };
+  return {
+    data: data?.data,
+    isSuccess: isSuccess,
+    isError: isError,
+    refetch,
+    isRefetching,
+  };
+};
+
+export const useListSearchResourceByTeacher = (
+  criteria: string,
+  teacherId: number,
+  pageNumber?: number,
+  limit?: number
+) => {
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  if (!limit) {
+    limit = 9;
+  }
+  const { data, isSuccess, isError, refetch, isRefetching } = useQuery({
+    queryKey: ["SEARCH_RESOURCES_LIST_BY_TEACHER_QUERY", pageNumber],
+    queryFn: () =>
+      getSearchResourceListByTeacherId(criteria, teacherId, pageNumber, limit),
+    staleTime: 0,
+    retry: 0,
+  });
+
+  return {
+    data: data?.data,
+    isSuccess: isSuccess,
+    isError: isError,
+    refetch,
+    isRefetching,
+  };
 };
 
 export const useDeleteResource = () => {

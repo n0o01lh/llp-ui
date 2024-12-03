@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useListResourceByTeacher } from "@/hooks/useResourceApi";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  useListResourceByTeacher,
+  useListSearchResourceByTeacher,
+} from "@/hooks/useResourceApi";
 import { Alert } from "../Alert";
+import _ from "lodash";
 
 import ResourcesGrid from "./ResourcesGrid";
-import { useQueryClient } from "@tanstack/react-query";
 import { UserStoreState, useUserStore } from "@/store/userStore";
 import { jwtDecode } from "jwt-decode";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router";
+import SearchBox from "../Shared/SearchBox";
+import { PaginatorResult } from "../Shared/Paginator";
 
 export interface Resource {
   id: string;
@@ -26,14 +31,21 @@ const Resources = () => {
   const teacherId = (jwtDecode(userAuth?.token as string) as { id: number }).id;
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [resources, setResources] = useState<Array<Resource>>([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [resources, setResources] = useState<PaginatorResult>();
   const [data] = useState<unknown>();
   const {
     data: resourceList,
     isSuccess,
     refetch,
+    isRefetching,
   } = useListResourceByTeacher(teacherId, currentPage);
-  const queryClient = useQueryClient();
+  const {
+    data: resourceSearchList,
+    isSuccess: searchSuccess,
+    refetch: searchRefetch,
+    isRefetching: isSearchRefetching,
+  } = useListSearchResourceByTeacher(searchValue, teacherId, currentPage);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,10 +53,24 @@ const Resources = () => {
   }, [currentPage, refetch]);
 
   useEffect(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["RESOURCES_LIST_BY_TEACHER_QUERY"],
-    });
-  }, [data, resources]);
+    if (searchValue.length == 0) {
+      refetch();
+    }
+  }, [searchValue, searchRefetch, refetch]);
+
+  useEffect(() => {
+    if (isSuccess && !isRefetching) {
+      setResources(resourceList);
+    }
+  }, [setResources, resourceList, isRefetching]);
+
+  useEffect(() => {
+    if (searchSuccess && !isSearchRefetching) {
+      setResources(resourceSearchList);
+    }
+  }, [searchSuccess, setResources, resourceSearchList, isSearchRefetching]);
+
+  const debouncedSearch = useCallback(_.debounce(searchRefetch, 500), []);
 
   return (
     <div>
@@ -58,9 +84,24 @@ const Resources = () => {
         </Button>
       </div>
 
+      <div className="flex md:flex-row flex-col justify-between content-center items-center mb-4">
+        <p className="pt-2 text-gray-600">
+          These are your resources, you can edit or delete them if you want.
+        </p>
+        <div className="pt-2 md:w-1/2 w-full">
+          <SearchBox
+            searchValue={searchValue}
+            onChange={(value: string) => {
+              setCurrentPage(1);
+              setSearchValue(value);
+              debouncedSearch();
+            }}
+          />
+        </div>
+      </div>
       <ResourcesGrid
         isSuccess={isSuccess}
-        resources={resourceList}
+        resources={resources as PaginatorResult}
         setResources={setResources}
         updateResourcesPage={setCurrentPage}
       />

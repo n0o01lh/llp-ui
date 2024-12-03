@@ -28,7 +28,7 @@ import Paginator, { PaginatorResult } from "../Shared/Paginator";
 interface ResourcesGridProps {
   resources: PaginatorResult;
   isSuccess: boolean;
-  setResources: (resources: Array<Resource>) => void;
+  setResources: (resources: PaginatorResult) => void;
   updateResourcesPage: (page: number) => void;
 }
 
@@ -50,7 +50,11 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
 
   useEffect(() => {
     if (deleteSuccess) {
-      setResources(resources.rows.filter((r) => r.id !== idToDelete));
+      //resources.rows.filter((r) => r.id !== idToDelete)
+      setResources({
+        ...resources,
+        rows: resources.rows.filter((r) => r.id !== idToDelete),
+      });
       setIsDialogOpen(false);
     }
   }, [deleteSuccess]);
@@ -59,11 +63,8 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
     <div>
       {isSuccess ? (
         <div>
-          <p className="mb-4 text-gray-600">
-            These are your resources, you can edit or delete them if you want.
-          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {resources.rows.map((resource: Resource) => (
+            {resources?.rows.map((resource: Resource) => (
               <Card
                 key={resource.id}
                 className="relative overflow-hidden group"
@@ -145,8 +146,8 @@ const ResourcesGrid: React.FC<ResourcesGridProps> = (props) => {
             ))}
           </div>
           <Paginator
-            currentPage={resources.page}
-            totalPages={resources.totalPages}
+            currentPage={resources?.page}
+            totalPages={resources?.totalPages}
             onPageChange={updateResourcesPage}
           />
         </div>
