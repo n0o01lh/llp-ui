@@ -24,6 +24,9 @@ export interface Resource {
   duration: number;
   description: string;
   content: string;
+  extra_fields: {
+    order: number;
+  };
 }
 
 const Resources = () => {

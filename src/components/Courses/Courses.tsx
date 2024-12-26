@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import update from "immutability-helper";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -15,16 +16,7 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import {
-  Trash2,
-  Video,
-  Headphones,
-  FileText,
-  Save,
-  Pencil,
-  BookMarked,
-  SquareActivity,
-} from "lucide-react";
+import { Trash2, Save, Pencil } from "lucide-react";
 import { Resource } from "../Resources/Resources";
 import { useListResourceByTeacher } from "@/hooks/useResourceApi";
 import CoursesForm from "./CoursesForm";
@@ -40,6 +32,7 @@ import { useNavigate } from "react-router";
 import { UserStoreState, useUserStore } from "@/store/userStore";
 import { jwtDecode } from "jwt-decode";
 import Paginator from "../Shared/Paginator";
+import ResourceListItem from "./ResourceListItem";
 
 export interface Course {
   id: string;
@@ -170,7 +163,12 @@ const Courses = () => {
   const saveChanges = async (courseId: string) => {
     const resourcesIds = courses
       .find((c: Course) => c.id === courseId)
-      ?.resources.map((resource: Resource) => resource.id);
+      ?.resources.map((resource: Resource) => {
+        return {
+          resource_id: resource.id,
+          order: resource.extra_fields ? resource.extra_fields.order : 0,
+        };
+      });
 
     resourcesToDelete?.map(async (id: string) =>
       deleteMutate({ courseId, resourceId: id })
@@ -234,60 +232,54 @@ const Courses = () => {
                     Resources:
                   </h4>
                   <div className="space-y-2">
-                    {course.resources.map((resourceInList: Resource) => {
-                      const resource: Resource = resources.rows.find(
-                        (r: Resource) => r.id === resourceInList.id
-                      );
-                      return resource ? (
-                        <div
-                          key={resource.id}
-                          className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-2 rounded"
-                        >
-                          <div className="flex flex-1 items-center space-x-2">
-                            {resource.resource_type === "video" && (
-                              <Video className="h-4 w-4 text-blue-500" />
-                            )}
-                            {resource.resource_type === "audio" && (
-                              <Headphones className="h-4 w-4 text-green-500" />
-                            )}
-                            {resource.resource_type === "document" && (
-                              <FileText className="h-4 w-4 text-yellow-500" />
-                            )}
-                            {resource.resource_type === "reading" && (
-                              <BookMarked className="h-4 w-4 text-cyan-500" />
-                            )}
-                            {resource.resource_type === "quiz" && (
-                              <SquareActivity className="h-4 w-4 text-indigo-500" />
-                            )}
-                            <span className="font-medium dark:text-white">
-                              {resource.title}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            <span className="text-sm dark:text-gray-300">
-                              ${resource.price}
-                            </span>
-                            {(resource.resource_type === "video" ||
-                              resource.resource_type === "audio") && (
-                              <span className="text-sm dark:text-gray-300">
-                                {resource.duration} min
-                              </span>
-                            )}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => {
-                                setIsDialogOpen(true);
-                                setCourseIdFromDelete(course.id);
-                                setResourceIdToDelete(resource.id);
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ) : null;
-                    })}
+                    {course.resources.map(
+                      (resourceInList: Resource, index: number) => {
+                        return (
+                          <ResourceListItem
+                            courseId={course.id}
+                            resource={resourceInList}
+                            setResourceIdToDelete={setResourceIdToDelete}
+                            setCourseIdFromDelete={setCourseIdFromDelete}
+                            setIsDialogOpen={setIsDialogOpen}
+                            key={resourceInList.id}
+                            index={index}
+                            moveItem={(
+                              dragIndex: number,
+                              hoverIndex: number
+                            ) => {
+                              const prevResources = course.resources;
+                              const updatedResources = update(prevResources, {
+                                $splice: [
+                                  [dragIndex, 1],
+                                  [
+                                    hoverIndex,
+                                    0,
+                                    prevResources[dragIndex] as Resource,
+                                  ],
+                                ],
+                              });
+
+                              updatedResources.forEach(
+                                (resource, index) =>
+                                  (resource.extra_fields.order = index)
+                              );
+
+                              setCourses(
+                                courses.map((currentCourse) =>
+                                  course.id === currentCourse.id
+                                    ? {
+                                        ...course,
+                                        resources: updatedResources,
+                                      }
+                                    : currentCourse
+                                )
+                              );
+                              setsaveChangesButton(false);
+                            }}
+                          />
+                        );
+                      }
+                    )}
                   </div>
                   <Select
                     onValueChange={(value) =>
