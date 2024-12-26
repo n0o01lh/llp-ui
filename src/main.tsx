@@ -17,6 +17,8 @@ import Forbidden from "./components/Forbidden.tsx";
 import { ROLES } from "./components/Shared/Constants.tsx";
 import TopMenu from "./components/Shared/TopMenu.tsx";
 import ResourcesForm from "./components/Resources/ResourcesForm.tsx";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +84,8 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
-    <RouterProvider router={router} />
+    <DndProvider backend={HTML5Backend}>
+      <RouterProvider router={router} />
+    </DndProvider>
   </QueryClientProvider>
 );
