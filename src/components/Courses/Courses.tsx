@@ -208,7 +208,6 @@ const Courses = () => {
 
   useEffect(() => {
     if (searchValue.length == 0) {
-      console.log("No value - refetching...");
       refetch();
     }
   }, [searchValue, searchRefetch, refetch]);
@@ -221,7 +220,6 @@ const Courses = () => {
 
   useEffect(() => {
     if (searchSuccess && !isSearchRefetching) {
-      console.log("Searching...");
       setCourses(courseSearchList.rows);
     } else {
       setCourses(courseList.rows);
