@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import update from "immutability-helper";
 import { Button } from "@/components/ui/button";
+import _ from "lodash";
 import {
   Select,
   SelectContent,
@@ -25,6 +26,7 @@ import {
   useCourseListByTeacher,
   useDeleteCourse,
   useDeleteResourceFromCourse,
+  useListSearchCourseByTeacher,
 } from "@/hooks/useCourseApi";
 import { Alert } from "../Alert";
 import DeleteConfirmationDialog from "../Shared/DeleteConfirmationDialog";
@@ -33,6 +35,7 @@ import { UserStoreState, useUserStore } from "@/store/userStore";
 import { jwtDecode } from "jwt-decode";
 import Paginator from "../Shared/Paginator";
 import ResourceListItem from "./ResourceListItem";
+import SearchBox from "../Shared/SearchBox";
 
 export interface Course {
   id: string;
@@ -54,10 +57,11 @@ const Courses = () => {
   const [saveChangesButton, setsaveChangesButton] = useState(true);
   const { mutate, isSuccess } = useAddResourcesToCourse();
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: courseList, refetch } = useCourseListByTeacher(
-    teacherId,
-    currentPage
-  );
+  const {
+    data: courseList,
+    refetch,
+    isRefetching,
+  } = useCourseListByTeacher(teacherId, currentPage);
   const { mutate: deleteMutate } = useDeleteResourceFromCourse();
   const { mutate: deleteCourseMutate, isSuccess: isSuccessDeleteCourse } =
     useDeleteCourse();
@@ -67,6 +71,15 @@ const Courses = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCourseDialogOpen, setIsCourseDialogOpen] = useState(false);
   const [resourcesToDelete, setResourcesToDelete] = useState<Array<string>>([]);
+  const [searchValue, setSearchValue] = useState("");
+  const {
+    data: courseSearchList,
+    isSuccess: searchSuccess,
+    refetch: searchRefetch,
+    isRefetching: isSearchRefetching,
+  } = useListSearchCourseByTeacher(searchValue, teacherId, currentPage);
+  const debouncedSearch = useCallback(_.debounce(searchRefetch, 500), []);
+
   const navigate = useNavigate();
 
   const deleteCourse = () => {
@@ -189,6 +202,32 @@ const Courses = () => {
     return course?.title;
   };
 
+  useEffect(() => {
+    refetch();
+  }, [currentPage, refetch]);
+
+  useEffect(() => {
+    if (searchValue.length == 0) {
+      console.log("No value - refetching...");
+      refetch();
+    }
+  }, [searchValue, searchRefetch, refetch]);
+
+  useEffect(() => {
+    if (isSuccess && !isRefetching) {
+      setCourses(courseList.rows);
+    }
+  }, [setCourses, courseList, isRefetching]);
+
+  useEffect(() => {
+    if (searchSuccess && !isSearchRefetching) {
+      console.log("Searching...");
+      setCourses(courseSearchList.rows);
+    } else {
+      setCourses(courseList.rows);
+    }
+  }, [searchSuccess, setCourses, courseSearchList, isSearchRefetching]);
+
   return (
     <div>
       <CoursesForm courses={courses} setCourses={setCourses} />
@@ -197,6 +236,21 @@ const Courses = () => {
       {courses && resources ? (
         <div>
           <h2 className="text-2xl font-bold mb-4 dark:text-white">Courses</h2>
+          <div className="flex md:flex-row flex-col justify-between content-center items-center mb-4">
+            <p className="pt-2 text-gray-600">
+              These are your courses, you can edit or delete them if you want.
+            </p>
+            <div className="pt-2 md:w-1/2 w-full">
+              <SearchBox
+                searchValue={searchValue}
+                onChange={(value: string) => {
+                  setCurrentPage(1);
+                  setSearchValue(value);
+                  debouncedSearch();
+                }}
+              />
+            </div>
+          </div>
           <div className="space-y-4">
             {courses.map((course: Course) => (
               <Card key={course.id}>
