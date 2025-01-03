@@ -35,6 +35,22 @@ const getCourseListByTeacherId = async (
   });
 };
 
+const getSearchCourseListByTeacherId = async (
+  criteria: string,
+  teacherId: number,
+  pageNumber: number,
+  limit: number
+) => {
+  return await apiClient.get("/course/search", {
+    params: {
+      title: criteria,
+      teacher: teacherId,
+      page: pageNumber,
+      limit: limit,
+    },
+  });
+};
+
 const removeResourceFromCourse = async (payload: {
   courseId: string;
   resourceId: string;
@@ -97,12 +113,18 @@ export const useCourseListByTeacher = (
   if (!limit) {
     limit = 9;
   }
-  const { data, isSuccess, isError, refetch } = useQuery({
+  const { data, isSuccess, isError, refetch, isRefetching } = useQuery({
     queryKey: ["COURSE_LIST_BY_TEACHER_QUERY", teacherId],
     queryFn: () => getCourseListByTeacherId(teacherId, pageNumber, limit),
   });
 
-  return { data: data?.data, isSuccess: isSuccess, isError: isError, refetch };
+  return {
+    data: data?.data,
+    isSuccess: isSuccess,
+    isError: isError,
+    refetch,
+    isRefetching,
+  };
 };
 
 export const useAddResourcesToCourse = () => {
@@ -139,4 +161,33 @@ export const useDeleteCourse = () => {
       console.error("Error deleting resource", error);
     },
   });
+};
+
+export const useListSearchCourseByTeacher = (
+  criteria: string,
+  teacherId: number,
+  pageNumber?: number,
+  limit?: number
+) => {
+  if (!pageNumber) {
+    pageNumber = 1;
+  }
+  if (!limit) {
+    limit = 9;
+  }
+  const { data, isSuccess, isError, refetch, isRefetching } = useQuery({
+    queryKey: ["SEARCH_COURSES_LIST_BY_TEACHER_QUERY", pageNumber],
+    queryFn: () =>
+      getSearchCourseListByTeacherId(criteria, teacherId, pageNumber, limit),
+    staleTime: 0,
+    retry: 0,
+  });
+
+  return {
+    data: data?.data,
+    isSuccess: isSuccess,
+    isError: isError,
+    refetch,
+    isRefetching,
+  };
 };
